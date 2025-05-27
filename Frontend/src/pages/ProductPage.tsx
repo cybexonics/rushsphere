@@ -16,44 +16,44 @@ import { getData } from '@/lib/getData';
 import { transformProductData } from '@/lib/transformProductData';
 
 // Mock product data
-// const product = {
-//   id: '1',
-//   name: 'Wireless Noise Cancelling Headphones',
-//   price: 129.99,
-//   originalPrice: 169.99,
-//   discount: 23,
-//   rating: 4.7,
-//   reviews: 432,
-//   availability: 'In Stock',
-//   vendor: 'ElectroTech',
-//   vendorRating: 4.8,
-//   description: 'Experience crystal clear audio with our premium wireless headphones. Features active noise cancellation, 30-hour battery life, and comfortable over-ear design for extended listening sessions.',
-//   features: [
-//     'Active Noise Cancellation Technology',
-//     '30-hour Battery Life',
-//     'Premium Sound Quality',
-//     'Comfortable Over-Ear Design',
-//     'Voice Assistant Compatible',
-//     'Built-in Microphone'
-//   ],
-//   specifications: {
-//     'Bluetooth Version': '5.0',
-//     'Battery Life': '30 hours',
-//     'Charging Time': '2 hours',
-//     'Driver Size': '40mm',
-//     'Frequency Response': '20Hz - 20kHz',
-//     'Impedance': '32 ohms'
-//   },
-//   images: [
-//     '/placeholder.svg',
-//     '/placeholder.svg',
-//     '/placeholder.svg',
-//     '/placeholder.svg',
-//   ],
-//   colors: ['Black', 'White', 'Blue'],
-//   isNew: true,
-//   tags: ['electronics', 'headphones', 'wireless']
-// };
+const product = [{
+  id: '1',
+  name: 'Wireless Noise Cancelling Headphones',
+  price: 129.99,
+  originalPrice: 169.99,
+  discount: 23,
+  rating: 4.7,
+  reviews: 432,
+  availability: 'In Stock',
+  vendor: 'ElectroTech',
+  vendorRating: 4.8,
+  description: 'Experience crystal clear audio with our premium wireless headphones. Features active noise cancellation, 30-hour battery life, and comfortable over-ear design for extended listening sessions.',
+  features: [
+    'Active Noise Cancellation Technology',
+    '30-hour Battery Life',
+    'Premium Sound Quality',
+    'Comfortable Over-Ear Design',
+    'Voice Assistant Compatible',
+    'Built-in Microphone'
+  ],
+  specifications: {
+    'Bluetooth Version': '5.0',
+    'Battery Life': '30 hours',
+    'Charging Time': '2 hours',
+    'Driver Size': '40mm',
+    'Frequency Response': '20Hz - 20kHz',
+    'Impedance': '32 ohms'
+  },
+  images: [
+    '/placeholder.svg',
+    '/placeholder.svg',
+    '/placeholder.svg',
+    '/placeholder.svg',
+  ],
+  colors: ['Black', 'White', 'Blue'],
+  isNew: true,
+  tags: ['electronics', 'headphones', 'wireless']
+}];
 
 // Mock related products
 const relatedProducts = [
@@ -98,7 +98,7 @@ const ProductPage = () => {
   const { cart, addToCart } = useCart();
 
   
-  const [product, setProduct] = useState<any>(null);
+  // const [product, setProduct] = useState<any>(null);
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
@@ -111,7 +111,7 @@ const ProductPage = () => {
         const fetchedProduct = res?.data;
         const transformed = transformProductData(fetchedProduct);
         console.log(transformed)
-        setProduct(transformed);
+        // setProduct(transformed);
 
         // if (fetchedProduct?.attributes?.colors?.length > 0) {
         //   setSelectedColor(fetchedProduct.attributes.colors[0]);
@@ -144,7 +144,7 @@ const ProductPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      {JSON.stringify(product[0])}
+      {/* {JSON.stringify(product[0])}*/}
       <main className="container mx-auto px-4 py-8">
         {/* Breadcrumb navigation */}
         <div className="flex items-center text-sm text-gray-500 mb-6">
@@ -253,7 +253,7 @@ const ProductPage = () => {
               <div>
                 <h3 className="text-sm font-medium text-gray-900 mb-3">Color</h3>
                 <div className="flex gap-3">
-                  {product?.[0]?.tags?.map((color) => (
+                  {product?.[0]?.colors?.map((color) => (
                     <button
                       key={color}
                       onClick={() => setSelectedColor(color)}
