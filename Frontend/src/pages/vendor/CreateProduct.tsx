@@ -1,83 +1,402 @@
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button'; // Adjust the import if needed
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react'
+import axios from 'axios'
+import { getData } from '@/lib/getData'
+import { useAuth } from '@/context/AuthProvider'
 
-const NewProduct = () => {
-  const navigate = useNavigate();
+export default function ProductCreate() {
+
+  const { vendor } = useAuth();
+
   const [form, setForm] = useState({
     name: '',
+    slug: '',
     price: '',
-    stock: '',
-    category: '',
-    imageUrl: '',
+    old_price: 0,
+    description: '',
+    isNew: false,
+    categories: '',
+    subcategory: '',
+    other: {},
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const [saving, setSaving] = useState(false);
+  const [vendorsList, setVendorsList] = useState([]);
+  const [categoriesList, setCategoriesList] = useState([]);
+  const [subcategoriesList, setSubcategoriesList] = useState([]);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [colorList, setColorList] = useState<string[]>([]);
+  const [sizeList, setSizeList] = useState<string[]>([]);
+  const [newColor, setNewColor] = useState('');
+  const [newSize, setNewSize] = useState('');
+  const [featuresList, setFeaturesList] = useState<{ key: string, value: string }[]>([]);
+  const [newFeatureKey, setNewFeatureKey] = useState('');
+  const [newFeatureValue, setNewFeatureValue] = useState('');
+
+  // Fetch categories/subcategories (once)
+  useState(() => {
+    const fetchLists = async () => {
+      const vendors = await getData('vendors');
+      const categories = await getData('categories');
+      const subcategories = await getData('subcategories?populate=*');
+      console.log(categories)
+      setVendorsList(vendors.data || []);
+      setCategoriesList(categories.data || []);
+      setSubcategoriesList(subcategories.data || []);
+    };
+    fetchLists();
+    console.log(vendor)
+  }, []);
+
+  const slugify = (text: string) =>
+  text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')        // Replace spaces with -
+    .replace(/&/g, '-and-')      // Replace & with 'and'
+    .replace(/[^\w\-]+/g, '')    // Remove all non-word chars
+    .replace(/\-\-+/g, '-');     // Replace multiple - with single -
+
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setForm(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const addColor = () => {
+    if (newColor.trim() && !colorList.includes(newColor.trim())) {
+      setColorList([...colorList, newColor.trim()]);
+      setNewColor('');
+    }
+  };
+
+  const removeColor = (color) => setColorList(colorList.filter(c => c !== color));
+
+  const addSize = () => {
+    if (newSize.trim() && !sizeList.includes(newSize.trim())) {
+      setSizeList([...sizeList, newSize.trim()]);
+      setNewSize('');
+    }
+  };
+
+  const removeSize = (size) => setSizeList(sizeList.filter(s => s !== size));
+
+  const addFeature = () => {
+    if (newFeatureKey.trim() && newFeatureValue.trim()) {
+      setFeaturesList([...featuresList, { key: newFeatureKey.trim(), value: newFeatureValue.trim() }]);
+      setNewFeatureKey('');
+      setNewFeatureValue('');
+    }
+  };
+
+  const removeFeature = (key) => {
+    setFeaturesList(featuresList.filter(f => f.key !== key));
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Creating Product:', form);
-    // TODO: Call API to create product
-    navigate('/vendor/products');
+    setSaving(true);
+
+
+    const selectedCategory = categoriesList.find(c => c.documentId === form.categories);
+    const selectedSubcategory = subcategoriesList.find(s => s.documentId === form.subcategory);
+
+    const categoryId = selectedCategory?.id;
+    const subcategoryId = selectedSubcategory?.id;
+
+
+
+    try {
+      const featuresObj = {};
+      featuresList.forEach(({ key, value }) => {
+        featuresObj[key] = value;
+      });
+
+      const data = {
+        ...form,
+        slug:slugify(form.name),
+        images: imageUrls,
+        description: [form.description],
+        features: [featuresObj],
+        other: {
+        color: colorList,
+        size: sizeList,
+      },
+      categories: categoryId ? { connect: [{ id: categoryId }] } : undefined,
+      subcategory: subcategoryId ? { connect: [{ id: subcategoryId }] } : undefined,
+      };
+
+      await axios.post('http://localhost:1337/api/products', { data });
+
+      alert('✅ Product created successfully!');
+    } catch (err) {
+      console.error(err);
+      alert('❌ Failed to create product');
+    }
+
+    setSaving(false);
   };
 
   return (
-    <div className="p-6 max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Add New Product</h1>
-      <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-lg shadow-md border border-gray-100">
-        <input
-          type="text"
-          name="name"
-          placeholder="Product Name"
-          value={form.name}
-          onChange={handleChange}
-          className="w-full p-3 border border-gray-300 rounded"
-          required
-        />
-        <input
-          type="text"
-          name="price"
-          placeholder="Price"
-          value={form.price}
-          onChange={handleChange}
-          className="w-full p-3 border border-gray-300 rounded"
-          required
-        />
-        <input
-          type="number"
-          name="stock"
-          placeholder="Stock Quantity"
-          value={form.stock}
-          onChange={handleChange}
-          className="w-full p-3 border border-gray-300 rounded"
-          required
-        />
-        <input
-          type="text"
-          name="category"
-          placeholder="Category"
-          value={form.category}
-          onChange={handleChange}
-          className="w-full p-3 border border-gray-300 rounded"
-          required
-        />
-        <input
-          type="text"
-          name="imageUrl"
-          placeholder="Image URL"
-          value={form.imageUrl}
-          onChange={handleChange}
-          className="w-full p-3 border border-gray-300 rounded"
-        />
-        <Button type="submit" className="bg-green-600 hover:bg-green-700 text-white w-full">
-          Create Product
-        </Button>
-      </form>
-    </div>
-  );
-};
+    <form onSubmit={handleSubmit} className="max-w-4xl mx-auto p-6 bg-white rounded-md shadow space-y-6">
+      <h1 className="text-2xl font-bold">➕ Create New Product</h1>
 
-export default NewProduct;
+    {/* Basic Info */}
+<div className="mb-4">
+  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Product Name</label>
+  <input
+    type="text"
+    name="name"
+    id="name"
+    value={form.name}
+    onChange={handleChange}
+    className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm shadow-sm focus:border-purple-600 focus:ring-2 focus:ring-purple-500 focus:outline-none transition-all duration-200"
+    placeholder="Enter product name"
+  />
+</div>
+
+<div className="mb-4">
+  <label htmlFor="slug" className="block text-sm font-medium text-gray-700 mb-1">Slug</label>
+  <input
+    name="slug"
+    value={form.slug}
+    onChange={handleChange}
+    className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm shadow-sm focus:border-purple-600 focus:ring-2 focus:ring-purple-500 focus:outline-none transition-all duration-200"
+    placeholder="Enter product slug"
+  />
+</div>
+
+{/* Upload Multiple Images */}
+<div className="mb-4">
+  <label className="block font-medium mb-1">Product Images</label>
+  <input
+    type="file"
+    accept="image/*"
+    multiple
+    onChange={(e) => setImageFiles(Array.from(e.target.files))}
+    className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm"
+  />
+  <button
+    type="button"
+    onClick={async () => {
+      for (let file of imageFiles) {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("upload_preset", "company-test"); // change as needed
+
+        const res = await fetch("https://api.cloudinary.com/v1_1/dd5rsnbgi/image/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        const data = await res.json();
+        if (data.secure_url) {
+          setImageUrls((prev) => [...prev, data.secure_url]);
+        }
+      }
+    }}
+    className="mt-2 bg-purple-600 text-white px-4 py-1 rounded hover:bg-purple-700"
+  >
+    Upload Images
+  </button>
+
+  {imageUrls.length > 0 && (
+    <div className="mt-4 grid grid-cols-3 gap-4">
+      {imageUrls.map((url, index) => (
+        <img key={index} src={url} alt={`Uploaded ${index}`} className="w-full rounded-md" />
+      ))}
+    </div>
+  )}
+</div>
+
+{/* Pricing */}
+<div className="grid grid-cols-2 gap-4">
+  <div>
+    <label className="block font-medium">Price</label>
+    <input
+      type="number"
+      name="price"
+      value={form.price}
+      onChange={handleChange}
+      className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm"
+      placeholder="Enter price"
+    />
+  </div>
+  <div>
+    <label className="block font-medium">Old Price</label>
+    <input
+      type="number"
+      name="old_price"
+      value={form.old_price}
+      onChange={handleChange}
+      className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm"
+      placeholder="Enter old price"
+    />
+  </div>
+</div>
+
+{/* Description */}
+<div>
+  <label className="block font-medium">Description</label>
+  <textarea
+    name="description"
+    value={form.description}
+    onChange={handleChange}
+    className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm"
+    placeholder="Enter description"
+    rows="5"
+  />
+</div>
+
+{/* Colors */}
+<div>
+  <label className="block font-medium mb-1">Colors</label>
+  <div className="flex gap-2 mb-2">
+    <input
+      type="text"
+      value={newColor}
+      onChange={(e) => setNewColor(e.target.value)}
+      placeholder="Add color"
+      className="flex-grow rounded-md border border-gray-300 px-4 py-2 text-sm"
+    />
+    <button type="button" onClick={addColor} className="bg-purple-600 text-white px-4 rounded hover:bg-purple-700">Add</button>
+  </div>
+  <div className="flex flex-wrap gap-2">
+    {colorList.map(c => (
+      <div key={c} className="flex items-center gap-1 bg-purple-100 text-purple-800 rounded px-3 py-1 text-sm">
+        <span>{c}</span>
+        <button type="button" onClick={() => removeColor(c)} className="font-bold">×</button>
+      </div>
+    ))}
+  </div>
+</div>
+
+{/* Sizes */}
+<div>
+  <label className="block font-medium mb-1">Sizes</label>
+  <div className="flex gap-2 mb-2">
+    <input
+      type="text"
+      value={newSize}
+      onChange={(e) => setNewSize(e.target.value)}
+      placeholder="Add size"
+      className="flex-grow rounded-md border border-gray-300 px-4 py-2 text-sm"
+    />
+    <button type="button" onClick={addSize} className="bg-purple-600 text-white px-4 rounded hover:bg-purple-700">Add</button>
+  </div>
+  <div className="flex flex-wrap gap-2">
+    {sizeList.map(s => (
+      <div key={s} className="flex items-center gap-1 bg-purple-100 text-purple-800 rounded px-3 py-1 text-sm">
+        <span>{s}</span>
+        <button type="button" onClick={() => removeSize(s)} className="font-bold">×</button>
+      </div>
+    ))}
+  </div>
+</div>
+
+{/* Features */}
+<div>
+  <label className="block font-medium mb-2">Features</label>
+  <div className="space-y-2 mb-4">
+    {featuresList.map(({ key, value }) => (
+      <div key={key} className="flex items-center gap-2">
+        <span className="font-semibold">{key}:</span>
+        <span>{value}</span>
+        <button type="button" onClick={() => removeFeature(key)} className="ml-auto text-red-500 font-bold">×</button>
+      </div>
+    ))}
+  </div>
+  <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+    <input
+      type="text"
+      placeholder="Feature key"
+      value={newFeatureKey}
+      onChange={e => setNewFeatureKey(e.target.value)}
+      className="w-full sm:flex-1 rounded-md border border-gray-300 px-4 py-2 text-sm"
+    />
+    <input
+      type="text"
+      placeholder="Feature value"
+      value={newFeatureValue}
+      onChange={e => setNewFeatureValue(e.target.value)}
+      className="w-full sm:flex-1 rounded-md border border-gray-300 px-4 py-2 text-sm"
+    />
+    <button
+      type="button"
+      onClick={addFeature}
+      className="w-full sm:w-auto bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700"
+    >
+      Add Feature
+    </button>
+  </div>
+</div>
+
+{/* Category Dropdown */}
+<div>
+  <label className="block font-medium">Category</label>
+  
+  <select
+    name="categories"
+    value={form.categories}
+    onChange={e => {
+      setForm(prev => ({
+        ...prev,
+        categories: e.target.value,
+        subcategory: '' // reset subcategory
+      }));
+    }}
+    className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm"
+  >
+    <option value="">-- Select Category --</option>
+    {categoriesList.map(c => (
+      <option key={c.id} value={c.documentId}>{c.name}</option>
+    ))}
+  </select>
+</div>
+
+{/* Subcategory Dropdown */}
+<div>
+  <label className="block font-medium">Subcategory</label>
+  <select
+    name="subcategory"
+    value={form.subcategory}
+    onChange={handleChange}
+    className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm"
+  >
+    <option value="">-- Select Subcategory --</option>
+    {subcategoriesList
+      .filter(sub => sub.category?.documentId === form.categories)
+      .map(sub => (
+        <option key={sub.id} value={sub.documentId}>{sub.name}</option>
+      ))}
+  </select>
+</div>
+
+{/* New Product Checkbox */}
+<div className="flex items-center mt-4">
+  <input
+    type="checkbox"
+    name="isNew"
+    checked={form.isNew}
+    onChange={handleChange}
+    className="mr-2"
+  />
+  <label className="font-medium">Mark as New</label>
+</div>
+
+
+      <button
+        type="submit"
+        disabled={saving}
+        className="bg-purple-600 text-white py-2 px-6 rounded hover:bg-purple-700"
+      >
+        {saving ? 'Saving...' : '💾 Create Product'}
+      </button>
+    </form>
+  );
+}
 

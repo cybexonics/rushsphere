@@ -71,7 +71,7 @@ const App = () => (
                     element={<CreateProduct />}
                   />
                   <Route
-                    path="/vendor/products/edit/:productId"
+                    path="/vendor/products/edit/:slug"
                     element={<EditProduct />}
                   />
                   <Route path="/vendor/orders" element={<VendorOrders />} />

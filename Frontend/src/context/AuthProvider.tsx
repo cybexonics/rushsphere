@@ -29,6 +29,7 @@ useEffect(() => {
   }else if (storedVendor) {
     try {
       const parsedUser = JSON.parse(storedVendor);
+      
       setVendor(parsedUser);
     } catch (error) {
       console.error("Failed to parse user from localStorage:", error);

@@ -21,18 +21,6 @@
       "targetField": "name",
       "required": true
     },
-    "images": {
-      "type": "media",
-      "multiple": true,
-      "required": true,
-      "allowedTypes": [
-        "images"
-      ]
-    },
-    "description": {
-      "type": "blocks",
-      "required": true
-    },
     "price": {
       "type": "integer",
       "required": true
@@ -65,18 +53,15 @@
       "type": "boolean",
       "default": true
     },
-    "size": {
-      "type": "enumeration",
-      "enum": [
-        "S",
-        "M",
-        "L",
-        "XL"
-      ]
-    },
     "features": {
-      "type": "blocks",
+      "type": "json"
+    },
+    "description": {
+      "type": "json",
       "required": true
+    },
+    "images": {
+      "type": "json"
     }
   }
 }

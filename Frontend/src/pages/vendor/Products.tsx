@@ -1,38 +1,31 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Pencil, Trash2, Plus } from 'lucide-react';
-import { Button } from '@/components/ui/button'; // Adjust path based on your project
-
-const products = [
-  {
-    id: 1,
-    name: 'Wireless Headphones',
-    price: '$89.99',
-    stock: 24,
-    category: 'Electronics',
-    imageUrl: 'https://via.placeholder.com/80',
-  },
-  {
-    id: 2,
-    name: 'Smart Watch',
-    price: '$199.99',
-    stock: 12,
-    category: 'Accessories',
-    imageUrl: 'https://via.placeholder.com/80',
-  },
-  {
-    id: 3,
-    name: 'Bluetooth Speaker',
-    price: '$79.99',
-    stock: 8,
-    category: 'Audio',
-    imageUrl: 'https://via.placeholder.com/80',
-  },
-];
+import { Button } from '@/components/ui/button';
+import { getData } from '@/lib/getData';
 
 const VendorProductList = () => {
-  const handleDelete = (id: number) => {
-    // Logic to delete product (e.g., API call)
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchProducts = async () => {
+    try {
+      const res = await getData('products?populate=*');
+      console.log(res)
+      setProducts(res?.data || []);
+    } catch (err) {
+      console.error('Failed to load products:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const handleDelete = (id) => {
+    // TODO: Add API logic
     alert(`Delete product with ID: ${id}`);
   };
 
@@ -60,44 +53,49 @@ const VendorProductList = () => {
               <th className="px-6 py-3 font-medium text-gray-500">Product</th>
               <th className="px-6 py-3 font-medium text-gray-500">Category</th>
               <th className="px-6 py-3 font-medium text-gray-500">Price</th>
-              <th className="px-6 py-3 font-medium text-gray-500">Stock</th>
+              <th className="px-6 py-3 font-medium text-gray-500">Vendor</th>
               <th className="px-6 py-3 font-medium text-gray-500 text-center">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
-            {products.map((product) => (
-              <tr key={product.id}>
-                <td className="px-6 py-4 flex items-center gap-4">
-                  <img
-                    src={product.imageUrl}
-                    alt={product.name}
-                    className="w-12 h-12 rounded object-cover"
-                  />
-                  <div>
-                    <p className="font-medium text-gray-900">{product.name}</p>
-                  </div>
-                </td>
-                <td className="px-6 py-4 text-gray-700">{product.category}</td>
-                <td className="px-6 py-4 text-gray-700">{product.price}</td>
-                <td className="px-6 py-4 text-gray-700">{product.stock}</td>
-                <td className="px-6 py-4 text-center">
-                  <div className="flex justify-center space-x-2">
-                    <Link to={`/vendor/products/edit/${product.id}`}>
-                      <Button variant="outline" size="sm">
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                    </Link>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => handleDelete(product.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </td>
+            {loading ? (
+              <tr>
+                <td colSpan={5} className="px-6 py-4 text-center text-gray-500">Loading products...</td>
               </tr>
-            ))}
+            ) : products.length === 0 ? (
+              <tr>
+                <td colSpan={5} className="px-6 py-4 text-center text-gray-500">No products found.</td>
+              </tr>
+            ) : (
+              products.map((product) => {
+                const imageUrl = product.images?.data?.[0]?.url || 'https://via.placeholder.com/80';
+                return (
+                  <tr key={product.id}>
+                    <td className="px-6 py-4 flex items-center gap-4">
+                      <img src={imageUrl} alt={product.name} className="w-12 h-12 rounded object-cover" />
+                      <div>
+                        <p className="font-medium text-gray-900">{product.name}</p>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-gray-700">{product.categories?.[0]?.name || '—'}</td>
+                    <td className="px-6 py-4 text-gray-700">${product.price}</td>
+                    <td className="px-6 py-4 text-gray-700">{product.vendors?.[0]?.first_name || '—'}</td>
+                    <td className="px-6 py-4 text-center">
+                      <div className="flex justify-center space-x-2">
+                        <Link to={`/vendor/products/edit/${product.slug}`}>
+                          <Button variant="outline" size="sm">
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                        </Link>
+                        <Button variant="destructive" size="sm" onClick={() => handleDelete(product.id)}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
           </tbody>
         </table>
       </div>

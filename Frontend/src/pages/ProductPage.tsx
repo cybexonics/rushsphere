@@ -16,44 +16,44 @@ import { getData } from '@/lib/getData';
 import { transformProductData } from '@/lib/transformProductData';
 
 // Mock product data
-const product = [{
-  id: '1',
-  name: 'Wireless Noise Cancelling Headphones',
-  price: 129.99,
-  originalPrice: 169.99,
-  discount: 23,
-  rating: 4.7,
-  reviews: 432,
-  availability: 'In Stock',
-  vendor: 'ElectroTech',
-  vendorRating: 4.8,
-  description: 'Experience crystal clear audio with our premium wireless headphones. Features active noise cancellation, 30-hour battery life, and comfortable over-ear design for extended listening sessions.',
-  features: [
-    'Active Noise Cancellation Technology',
-    '30-hour Battery Life',
-    'Premium Sound Quality',
-    'Comfortable Over-Ear Design',
-    'Voice Assistant Compatible',
-    'Built-in Microphone'
-  ],
-  specifications: {
-    'Bluetooth Version': '5.0',
-    'Battery Life': '30 hours',
-    'Charging Time': '2 hours',
-    'Driver Size': '40mm',
-    'Frequency Response': '20Hz - 20kHz',
-    'Impedance': '32 ohms'
-  },
-  images: [
-    '/placeholder.svg',
-    '/placeholder.svg',
-    '/placeholder.svg',
-    '/placeholder.svg',
-  ],
-  colors: ['Black', 'White', 'Blue'],
-  isNew: true,
-  tags: ['electronics', 'headphones', 'wireless']
-}];
+// const product = [{
+//   id: '1',
+//   name: 'Wireless Noise Cancelling Headphones',
+//   price: 129.99,
+//   originalPrice: 169.99,
+//   discount: 23,
+//   rating: 4.7,
+//   reviews: 432,
+//   availability: 'In Stock',
+//   vendor: 'ElectroTech',
+//   vendorRating: 4.8,
+//   description: 'Experience crystal clear audio with our premium wireless headphones. Features active noise cancellation, 30-hour battery life, and comfortable over-ear design for extended listening sessions.',
+//   features: [
+//     'Active Noise Cancellation Technology',
+//     '30-hour Battery Life',
+//     'Premium Sound Quality',
+//     'Comfortable Over-Ear Design',
+//     'Voice Assistant Compatible',
+//     'Built-in Microphone'
+//   ],
+//   specifications: {
+//     'Bluetooth Version': '5.0',
+//     'Battery Life': '30 hours',
+//     'Charging Time': '2 hours',
+//     'Driver Size': '40mm',
+//     'Frequency Response': '20Hz - 20kHz',
+//     'Impedance': '32 ohms'
+//   },
+//   images: [
+//     '/placeholder.svg',
+//     '/placeholder.svg',
+//     '/placeholder.svg',
+//     '/placeholder.svg',
+//   ],
+//   colors: ['Black', 'White', 'Blue'],
+//   isNew: true,
+//   tags: ['electronics', 'headphones', 'wireless']
+// }];
 
 // Mock related products
 const relatedProducts = [
@@ -98,7 +98,7 @@ const ProductPage = () => {
   const { cart, addToCart } = useCart();
 
   
-  // const [product, setProduct] = useState<any>(null);
+  const [product, setProduct] = useState<any>(null);
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
@@ -111,7 +111,7 @@ const ProductPage = () => {
         const fetchedProduct = res?.data;
         const transformed = transformProductData(fetchedProduct);
         console.log(transformed)
-        // setProduct(transformed);
+        setProduct(transformed);
 
         // if (fetchedProduct?.attributes?.colors?.length > 0) {
         //   setSelectedColor(fetchedProduct.attributes.colors[0]);
@@ -158,12 +158,13 @@ const ProductPage = () => {
         
         {/* Product Details */}
         <div className="bg-white rounded-lg shadow-md p-10 md:mx-10 mb-8">
+        
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Product Images Gallery */}
             <div className="space-y-4">
               <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 border">
                 <img 
-                  src={"/placeholder.svg"} 
+                  src={`http://localhost:1337${product?.[0]?.images?.[selectedImage]?.url}`} 
                   alt={product?.[0]?.name} 
                   className="w-full h-full object-contain"
                 />
@@ -178,7 +179,7 @@ const ProductPage = () => {
                     onClick={() => setSelectedImage(index)}
                   >
                     <img 
-                      src={img} 
+                      src={`http://localhost:1337${img.url}`} 
                       alt={`${product?.[0]?.name} view ${index + 1}`}
                       className="w-full h-full object-contain"
                     />
@@ -218,15 +219,40 @@ const ProductPage = () => {
                   </span>
                 </div>
                 
-                <div className="mt-4">
-                  <span className="text-lg text-gray-500">Sold by: </span>
-                  <a href={`/vendors/${product?.vendor}`} className="text-lg font-medium text-purple-700 hover:underline">
-                    {product?.[0]?.vendor?.name}
-                  </a>
-                  <span className="ml-2 text-sm text-gray-600">
-                    ({product?.[0]?.vendor?.rating} ★)
-                  </span>
-                </div>
+               {/* Vendor Info Box */}
+<div className="mt-4 p-3 border border-gray-200 rounded-md bg-gray-50">
+  <div className="flex justify-between items-center">
+    <span className="text-sm text-gray-600">Sold by:</span>
+    <a
+      href={`/vendors/${product?.[0]?.vendor?.id}`}
+      className="text-sm font-semibold text-purple-700 hover:underline"
+    >
+      {product?.[0]?.vendor?.name}
+    </a>
+  </div>
+  <div className="flex justify-between items-center mt-1 text-sm text-gray-600">
+    <div>
+      <span className="font-medium">Rating: </span>
+      {product?.[0]?.vendor?.rating} ★
+    </div>
+    {product?.[0]?.vendor?.place && (
+      <div>
+        <span className="font-medium">Location: </span>
+        {product?.[0]?.vendor?.place}
+      </div>
+    )}
+  </div>
+  <div className="mt-2 text-right">
+    <a
+      href={`/vendors/${product?.[0]?.vendor?.id}`}
+      className="text-xs text-purple-600 hover:underline"
+    >
+      View Vendor &rarr;
+    </a>
+  </div>
+</div>
+
+                
               </div>
               
               <div>

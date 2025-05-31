@@ -2,17 +2,20 @@ import React,{ useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
 import { getData } from  '@/lib/getData';
-
+import { transformProductData } from '@/lib/transformProductData';
 
 
 const Products = () => {
   const [products,setProducts] = useState([])
  useEffect(()=>{
   const fetchData = async() =>{
-    const res = await getData('/products')
-    console.log(res)
-    setProducts(res)
+    const res = await getData('products?populate=*')
+    const fetchedproducts = res?.data;
+    const transformed = transformProductData(fetchedproducts);
+    console.log(transformed)
+    setProducts(transformed)
   }
+  fetchData();
  },[])
 
   return (
@@ -20,7 +23,7 @@ const Products = () => {
       
       <main className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-8 text-center">All Products</h1>
-       {JSON.stringify(products)}
+       {/*JSON.stringify(products)*/}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {products.map((item,index) => (
             <ProductCard key={index} {...item} />

@@ -14,6 +14,7 @@ import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMe
 import { cn } from '@/lib/utils';
 import { useAuth } from "@/context/AuthProvider"
 import { useCart } from "@/context/CartProvider"
+import { getData } from "@/lib/getData"
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

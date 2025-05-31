@@ -438,7 +438,7 @@ export interface ApiCustomerCustomer extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     orders: Schema.Attribute.JSON;
-    password: Schema.Attribute.Password &
+    password: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.SetMinMaxLength<{
         minLength: 8;
@@ -509,9 +509,9 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    description: Schema.Attribute.Blocks & Schema.Attribute.Required;
-    features: Schema.Attribute.Blocks & Schema.Attribute.Required;
-    images: Schema.Attribute.Media<'images', true> & Schema.Attribute.Required;
+    description: Schema.Attribute.JSON & Schema.Attribute.Required;
+    features: Schema.Attribute.JSON;
+    images: Schema.Attribute.JSON;
     isNew: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -526,7 +526,6 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     other: Schema.Attribute.JSON;
     price: Schema.Attribute.Integer & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
-    size: Schema.Attribute.Enumeration<['S', 'M', 'L', 'XL']>;
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
     subcategory: Schema.Attribute.Relation<
       'manyToOne',
@@ -596,7 +595,11 @@ export interface ApiVendorVendor extends Struct.CollectionTypeSchema {
       'api::vendor.vendor'
     > &
       Schema.Attribute.Private;
-    password: Schema.Attribute.Password & Schema.Attribute.Required;
+    password: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMaxLength<{
+        minLength: 8;
+      }>;
     phone: Schema.Attribute.BigInteger &
       Schema.Attribute.Required &
       Schema.Attribute.Unique;

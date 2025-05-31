@@ -10,12 +10,13 @@ const ProductCard = ({
   slug,
   price,
   old_price,
-  image,
+  images,
   rating = 4, // default if missing
-  seller = 'Unknown Seller',
+  vendor = 'Unknown Seller',
   isNew,
   other,
-  features
+  features,
+  addToWishList,
 }) => {
   const discount = old_price ? Math.round(((old_price - price) / old_price) * 100) : null;
   const defaultImage = '/placeholder.jpg'; // You can use a placeholder or logo
@@ -25,14 +26,14 @@ const ProductCard = ({
       <Link to={`/product/${slug || id}`} className="block relative">
         <div className="overflow-hidden h-52 relative">
           <img 
-            src={image || defaultImage} 
+            src={`http://localhost:1337${images?.[0]?.url}`} 
             alt={name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
 
           {discount && (
             <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-md text-sm font-medium">
-              {discount}% OFF
+              {discount}% OFF 
             </div>
           )}
 
@@ -46,6 +47,7 @@ const ProductCard = ({
             size="icon" 
             variant="ghost" 
             className="absolute top-2 right-2 bg-white/80 hover:bg-white rounded-full w-8 h-8 p-1.5"
+            online={()=>addToWishList()}
           >
             <Heart className="h-full w-full text-slate-600" />
           </Button>
@@ -61,7 +63,7 @@ const ProductCard = ({
           </Link>
         </div>
 
-        <p className="text-sm text-slate-500 mb-2">by {seller}</p>
+        <p className="text-sm text-slate-500 mb-2">by {vendor.name}</p>
 
         <div className="flex items-center mb-3">
           <div className="flex items-center">
@@ -81,7 +83,7 @@ const ProductCard = ({
         <div className="flex items-center justify-between mt-auto">
           <div>
             <span className="text-lg font-bold text-indigo-600">${price?.toFixed(2)}</span>
-            {old_price && (
+            {old_price !== 0 && (
               <span className="text-sm text-slate-500 line-through ml-2">${old_price?.toFixed(2)}</span>
             )}
           </div>

@@ -33,8 +33,12 @@
       ]
     },
     "password": {
-      "type": "password",
-      "required": true
+      "type": "string",
+      "required": true,
+      "minLength": 8,
+      "config": {
+        "private": false
+      }
     },
     "phone": {
       "type": "biginteger",
