@@ -62,7 +62,7 @@ const relatedProducts = [
     name: 'Bluetooth Wireless Earbuds',
     price: 79.99,
     rating: 4.5,
-    image: '/placeholder.svg',
+    images: ['/placeholder.svg'],
     vendor: 'AudioTech'
   },
   {
@@ -70,7 +70,7 @@ const relatedProducts = [
     name: 'Premium Wired Headphones',
     price: 149.99,
     rating: 4.8,
-    image: '/placeholder.svg',
+    images: ['/placeholder.svg'],
     vendor: 'SoundMaster'
   },
   {
@@ -79,7 +79,7 @@ const relatedProducts = [
     price: 89.99,
     originalPrice: 109.99,
     rating: 4.6,
-    image: '/placeholder.svg',
+    images: ['/placeholder.svg'],
     vendor: 'ElectroTech'
   },
   {
@@ -87,7 +87,7 @@ const relatedProducts = [
     name: 'Noise Cancelling Earbuds',
     price: 119.99,
     rating: 4.4,
-    image: '/placeholder.svg',
+    images: ['/placeholder.svg'],
     vendor: 'SoundPro'
   }
 ];
@@ -276,10 +276,11 @@ const ProductPage = () => {
               <Separator />
               
               {/* Color Selection */}
+              {product?.[0]?.other?.color &&(
               <div>
                 <h3 className="text-sm font-medium text-gray-900 mb-3">Color</h3>
                 <div className="flex gap-3">
-                  {product?.[0]?.colors?.map((color) => (
+                  {product?.[0]?.other?.color?.map((color) => (
                     <button
                       key={color}
                       onClick={() => setSelectedColor(color)}
@@ -294,7 +295,27 @@ const ProductPage = () => {
                   ))}
                 </div>
               </div>
-              
+              )}
+              {product?.[0]?.other?.size && (
+               <div>
+                <h3 className="text-sm font-medium text-gray-900 mb-3">Color</h3>
+                <div className="flex gap-3">
+                  {product?.[0]?.other?.size?.map((color) => (
+                    <button
+                      key={color}
+                      onClick={() => setSelectedSize(color)}
+                      className={`px-3 py-1 border rounded-md ${
+                        selectedSize === color 
+                          ? 'border-purple-600 bg-purple-50' 
+                          : 'border-gray-300 hover:border-gray-400'
+                      }`}
+                    >
+                      {color}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              )}
               {/* Quantity Selection */}
               <div>
                 <h3 className="text-sm font-medium text-gray-900 mb-3">Quantity</h3>

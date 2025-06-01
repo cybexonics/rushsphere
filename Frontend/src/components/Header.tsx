@@ -15,11 +15,13 @@ import { cn } from '@/lib/utils';
 import { useAuth } from "@/context/AuthProvider"
 import { useCart } from "@/context/CartProvider"
 import { getData } from "@/lib/getData"
+import axios from 'axios'
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [expandedCategory, setExpandedCategory] = useState<number | null>(null);
+  const [categories,setCategories] = useState(null)
   const navigate = useNavigate();
   const { user,vendor } = useAuth()
   const { cart } = useCart()
@@ -40,34 +42,37 @@ const Header = () => {
     };
   }, []);
 
+  useEffect(() => {
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get('https://rushsphere.onrender.com/api/categories?populate=subcategories');
+      console.log(response?.data?.data)
+      const formatted = response?.data?.data.map(cat => ({
+        id: cat.id,
+        name: cat.name,
+        slug: cat.slug,
+        subcategories: cat.subcategories.data.map(sub => ({
+          id: sub.id,
+          name: sub.name,
+          slug: sub.slug
+        }))
+      }));
+      setCategories(formatted);
+    } catch (err) {
+      console.error("Failed to fetch categories:", err);
+    }
+  };
+
+  fetchCategories();
+}, []);
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     // Search functionality will go here
   };
 
   // Define category menu structure
-  const categories = [
-    {
-      name: "Men's Wear",
-      subcategories: ["T-Shirts", "Shirts", "Pants", "Jeans", "Suits", "Accessories"]
-    },
-    {
-      name: "Ladies' Wear",
-      subcategories: ["Dresses", "Tops", "Skirts", "Pants", "Shoes", "Accessories"]
-    },
-    {
-      name: "Watches",
-      subcategories: ["Luxury", "Casual", "Sports", "Smart Watches", "Classic"]
-    },
-    {
-      name: "Electronics",
-      subcategories: ["Smartphones", "Laptops", "Audio", "TV & Home Theater", "Cameras"]
-    },
-    {
-      name: "Footwear",
-      subcategories: ["Casual Shoes", "Formal Shoes", "Sports Shoes", "Sandals", "Boots"]
-    }
-  ];
+ 
 
   return (
     <header 
@@ -213,7 +218,7 @@ const Header = () => {
                             key={idx}
                             className="block w-full text-left py-1 px-2 text-sm hover:text-indigo-600"
                             onClick={() => {
-                              navigate(`/category/${category.name.toLowerCase().replace(/\s+/g, '-')}/${subcategory.toLowerCase().replace(/\s+/g, '-')}`);
+                              navigate(`/category/${category.name.toLowerCase().replace(/\s+/g, '-')}}`);
                               setIsMenuOpen(false);
                             }}
                           >
@@ -232,7 +237,7 @@ const Header = () => {
         {/* Desktop Categories Navigation Menu */}
         <div className="hidden md:block border-b border-slate-200 pt-3">
         <div className="hidden md:flex space-x-6 pt-3 border-b border-slate-200 flex items-center justify-center space-x-8">
-  {categories.map((category, idx) => (
+  {categories?.map((category, idx) => (
     <div key={idx} className="relative group ">
       <button className="text-slate-700 hover:text-indigo-600 font-medium py-2">
         {category.name}
@@ -240,11 +245,12 @@ const Header = () => {
 
       {/* Dropdown */}
       <div className="absolute left-0 top-full hidden group-hover:block bg-white shadow-lg rounded-md border border-slate-200 min-w-[200px] z-50">
+      {JSON.stringify(category)}
         <ul className="py-2">
           {category.subcategories.map((subcategory, subIdx) => (
             <li key={subIdx}>
               <Link
-                to={`/category/${category.name.toLowerCase().replace(/\s+/g, '-')}/${subcategory.toLowerCase().replace(/\s+/g, '-')}`}
+                to={`/category/${category.slug}`}
                 className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 hover:text-indigo-600"
               >
                 {subcategory}
