@@ -27,6 +27,11 @@ import EditProduct from "./pages/vendor/EditProduct";
 import VendorOrders from "./pages/vendor/Orders";
 import VendorOrderView from "./pages/vendor/OrderView";
 
+import Admin from "./pages/admin/Admin";
+import AdminLogin from "./pages/admin/login";
+import AdminProductApproval from './pages/admin/Products'
+import AdminOrdersPage from './pages/admin/Orders'
+
 import AuthProvider from "./context/AuthProvider";
 import CartProvider from "./context/CartProvider";
 
@@ -80,6 +85,10 @@ const App = () => (
                     element={<VendorOrderView />}
                   />
                 </Route>
+                <Route path="/admin" element={<Admin/>}/>
+                <Route path="/admin/login" element={<AdminLogin/>}/>
+                <Route path="/admin/products/pending" element={<AdminProductApproval />} />
+                <Route path="/admin/orders" element={<AdminOrdersPage />} />
               </Route>
             </Routes>
           </TooltipProvider>

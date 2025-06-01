@@ -16,7 +16,6 @@ const SellerRegister = () => {
     city: '',
     state: '',
     zipCode: '',
-    taxId: '',
     bankAccount: '',
     password: '',
     confirmPassword: '',
@@ -58,8 +57,6 @@ const SellerRegister = () => {
   if (isSubmitted) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Header />
-        
         <div className="container mx-auto px-4 py-16">
           <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-8 text-center">
             <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -82,8 +79,6 @@ const SellerRegister = () => {
             </Link>
           </div>
         </div>
-
-        <Footer />
       </div>
     );
   }
@@ -159,20 +154,7 @@ const SellerRegister = () => {
                   </select>
                 </div>
 
-                <div>
-                  <label className="block text-gray-700 text-sm font-semibold mb-2">
-                    Tax ID *
-                  </label>
-                  <input
-                    type="text"
-                    name="taxId"
-                    value={formData.taxId}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Tax ID / EIN"
-                    required
-                  />
-                </div>
+                
               </div>
             </div>
 
@@ -280,7 +262,7 @@ const SellerRegister = () => {
               <h3 className="text-xl font-semibold text-gray-800 mb-4">Banking Information</h3>
               <div>
                 <label className="block text-gray-700 text-sm font-semibold mb-2">
-                  Bank Account Number *
+                  Owner Online UPI ID *
                 </label>
                 <input
                   type="text"
@@ -288,7 +270,7 @@ const SellerRegister = () => {
                   value={formData.bankAccount}
                   onChange={handleChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Bank account for payments"
+                  placeholder="xxxxxxxx89@xyz"
                   required
                 />
               </div>

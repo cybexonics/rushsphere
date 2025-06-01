@@ -47,7 +47,7 @@ const ProductCard = ({
             size="icon" 
             variant="ghost" 
             className="absolute top-2 right-2 bg-white/80 hover:bg-white rounded-full w-8 h-8 p-1.5"
-            online={()=>addToWishList()}
+            onClick={()=>addToWishList()}
           >
             <Heart className="h-full w-full text-slate-600" />
           </Button>

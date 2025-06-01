@@ -206,33 +206,52 @@ const Header = () => {
 
               <div className="py-3 border-t border-slate-200">
                 <h3 className="font-semibold mb-2 px-2">Categories</h3>
-                {categories.map((category, index) => (
-                  <div key={index}>
-                    <button
-                      className="w-full flex justify-between items-center px-3 py-2 text-left font-medium hover:bg-slate-100"
-                      onClick={() => setExpandedCategory(expandedCategory === index ? null : index)}
-                    >
-                      {category.name}
-                      <ChevronDown size={18} className={expandedCategory === index ? 'rotate-180 transition-transform' : 'transition-transform'} />
-                    </button>
-                    {expandedCategory === index && (
-                      <div className="pl-5 pb-2">
-                        {category.subcategories.map((subcategory, idx) => (
-                          <button
-                            key={idx}
-                            className="block w-full text-left py-1 px-2 text-sm hover:text-indigo-600"
-                            onClick={() => {
-                              navigate(`/category/${category.name.toLowerCase().replace(/\s+/g, '-')}}`);
-                              setIsMenuOpen(false);
-                            }}
-                          >
-                            {subcategory}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ))}
+                {categories.map((category, index) => {
+  const hasSubcategories = category.subcategories && category.subcategories.length > 0;
+
+  return (
+    <div key={index}>
+      <button
+        className="w-full flex justify-between items-center px-3 py-2 text-left font-medium hover:bg-slate-100"
+        onClick={() => {
+          if (hasSubcategories) {
+            setExpandedCategory(expandedCategory === index ? null : index);
+          }
+        }}
+      >
+        {category.name}
+        {hasSubcategories && (
+          <ChevronDown
+            size={18}
+            className={
+              expandedCategory === index
+                ? 'rotate-180 transition-transform'
+                : 'transition-transform'
+            }
+          />
+        )}
+      </button>
+
+      {expandedCategory === index && hasSubcategories && (
+        <div className="pl-5 pb-2">
+          {category.subcategories.map((subcategory, idx) => (
+            <button
+              key={idx}
+              className="block w-full text-left py-1 px-2 text-sm hover:text-indigo-600"
+              onClick={() => {
+                navigate(`/category/${category.slug}/${subcategory.slug}`);
+                setIsMenuOpen(false);
+              }}
+            >
+              {subcategory.name}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+})}
+
               </div>
             </div>
           </div>
@@ -241,30 +260,36 @@ const Header = () => {
         {/* Desktop Categories Navigation Menu */}
         <div className="hidden md:block border-b border-slate-200 pt-3">
         <div className="hidden md:flex space-x-6 pt-3 border-b border-slate-200 flex items-center justify-center space-x-8">
-  {categories.map((category, idx) => (
-    <div key={idx} className="relative group ">
+  {categories.map((category, idx) => {
+  const hasSubcategories = category.subcategories && category.subcategories.length > 0;
+
+  return (
+    <div key={idx} className="relative group">
       <button className="text-slate-700 hover:text-indigo-600 font-medium py-2">
         {category.name}
       </button>
 
-      {/* Dropdown */}
-      <div className="absolute left-0 top-full hidden group-hover:block bg-white shadow-lg rounded-md border border-slate-200 min-w-[200px] z-50">
-      
-        <ul className="py-2">
-          {category.subcategories.map((subcategory, subIdx) => (
-            <li key={subIdx}>
-              <Link
-                to={`/category/${category.slug}/${subcategory.slug}`}
-                className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 hover:text-indigo-600"
-              >
-                {subcategory.name}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
+      {/* Dropdown menu only if subcategories exist */}
+      {hasSubcategories && (
+        <div className="absolute left-0 top-full hidden group-hover:block bg-white shadow-lg rounded-md border border-slate-200 min-w-[200px] z-50">
+          <ul className="py-2">
+            {category.subcategories.map((subcategory, subIdx) => (
+              <li key={subIdx}>
+                <Link
+                  to={`/category/${category.slug}/${subcategory.slug}`}
+                  className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 hover:text-indigo-600"
+                >
+                  {subcategory.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
-  ))}
+  );
+})}
+
 </div>
           
         </div>

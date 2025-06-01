@@ -65,7 +65,7 @@ const Index = () => {
               <div key={index} className="group cursor-pointer">
                 <div className="relative overflow-hidden rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
                   <img 
-                    src={`http://localhost:1337${category.image.url}`}
+                    src={category.image[0]}
                     alt={category.name}
                     className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                   />
