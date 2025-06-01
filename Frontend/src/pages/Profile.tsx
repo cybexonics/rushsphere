@@ -47,7 +47,7 @@ const Profile = () => {
                   <div className="flex flex-col items-center">
                     <Avatar className="h-24 w-24 mb-4">
                       <AvatarImage src={user?.image} alt={user?.name} />
-                      <AvatarFallback>{user?.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                      <AvatarFallback>{user?.name[0]}</AvatarFallback>
                     </Avatar>
                     <h2 className="text-xl font-bold">{user?.name}</h2>
                     <p className="text-gray-500 mb-6">{user?.email}</p>
