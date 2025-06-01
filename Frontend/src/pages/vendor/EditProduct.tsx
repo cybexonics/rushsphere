@@ -162,7 +162,7 @@ try {
       const productId = form?.id;
       console.log(data) 
 
-      await axios.put(`http://localhost:1337/api/products/${productId}`, { data });
+      await axios.put(`https://rushsphere.onrender.com/api/products/${productId}`, { data });
 
       alert('✅ Product updated successfully!');
     } catch (err) {

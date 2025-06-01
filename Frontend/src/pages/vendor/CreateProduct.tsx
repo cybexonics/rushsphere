@@ -130,7 +130,7 @@ export default function ProductCreate() {
       subcategory: subcategoryId,
       };
 
-      await axios.post('http://localhost:1337/api/products', { data });
+      await axios.post('https://rushsphere.onrender.com/api/products', { data });
 
       alert('✅ Product created successfully!');
     } catch (err) {

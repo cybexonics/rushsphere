@@ -27,7 +27,7 @@ const VendorProductList = () => {
 
   const handleDelete = async(id) => {
     // TODO: Add API logic
-    await axios.delete(`http://localhost:1337/api/products/${id}`)
+    await axios.delete(`https://rushsphere.onrender.com/api/products/${id}`)
   };
 
   return (
