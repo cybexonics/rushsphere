@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Pencil, Trash2, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { getData } from '@/lib/getData';
+import axios from 'axios';
 
 const VendorProductList = () => {
   const [products, setProducts] = useState([]);
@@ -24,9 +25,9 @@ const VendorProductList = () => {
     fetchProducts();
   }, []);
 
-  const handleDelete = (id) => {
+  const handleDelete = async(id) => {
     // TODO: Add API logic
-    alert(`Delete product with ID: ${id}`);
+    await axios.delete(`http://localhost:1337/api/products/${id}`)
   };
 
   return (
@@ -77,7 +78,7 @@ const VendorProductList = () => {
                         <p className="font-medium text-gray-900">{product.name}</p>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-gray-700">{product.categories?.[0]?.name || '—'}</td>
+                    <td className="px-6 py-4 text-gray-700">{product.category?.name || '—'}</td>
                     <td className="px-6 py-4 text-gray-700">${product.price}</td>
                     <td className="px-6 py-4 text-gray-700">{product.vendors?.[0]?.first_name || '—'}</td>
                     <td className="px-6 py-4 text-center">
@@ -87,7 +88,7 @@ const VendorProductList = () => {
                             <Pencil className="h-4 w-4" />
                           </Button>
                         </Link>
-                        <Button variant="destructive" size="sm" onClick={() => handleDelete(product.id)}>
+                        <Button variant="destructive" size="sm" onClick={() => handleDelete(product.documentId)}>
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>

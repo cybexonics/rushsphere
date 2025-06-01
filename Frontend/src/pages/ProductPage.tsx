@@ -164,7 +164,7 @@ const ProductPage = () => {
             <div className="space-y-4">
               <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 border">
                 <img 
-                  src={`http://localhost:1337${product?.[0]?.images?.[selectedImage]?.url}`} 
+                  src={product?.[0]?.images?.[selectedImage]} 
                   alt={product?.[0]?.name} 
                   className="w-full h-full object-contain"
                 />
@@ -179,7 +179,7 @@ const ProductPage = () => {
                     onClick={() => setSelectedImage(index)}
                   >
                     <img 
-                      src={`http://localhost:1337${img.url}`} 
+                      src={img} 
                       alt={`${product?.[0]?.name} view ${index + 1}`}
                       className="w-full h-full object-contain"
                     />
@@ -258,11 +258,11 @@ const ProductPage = () => {
               <div>
                 <div className="flex items-baseline">
                   <span className="text-3xl font-bold text-gray-900">
-                    ${product?.[0]?.price?.toFixed(2)}
+                    ${product?.[0]?.price}
                   </span>
                   {product?.[0]?.old_price && (
                     <span className="ml-3 text-lg text-gray-500 line-through">
-                      ${product?.[0]?.old_price?.toFixed(2)}
+                      ${product?.[0]?.old_price}
                     </span>
                   )}
                 </div>
@@ -418,18 +418,15 @@ const ProductPage = () => {
               
               <div>
                 <h3 className="text-lg font-medium mb-3">Key Features</h3>
-                <ul className="list-disc pl-5 space-y-2 text-gray-700">
-                  {product?.[0]?.features?.map((feature, index) => (
-                    <li key={index}>{feature}</li>
-                  ))}
-                </ul>
+                
+                  
               </div>
             </TabsContent>
             
             <TabsContent value="specifications" className="space-y-4">
               <h3 className="text-lg font-medium mb-2">Technical Specifications</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {Object.entries(product?.[0]?.specifications || {})?.map(([key, value]) => (
+                {Object.entries(product?.[0]?.features || {})?.map(([key, value]) => (
                   <div key={key} className="flex border-b pb-3">
                     <span className="font-medium text-gray-700 w-1/2">{key}:</span>
                     <span className="text-gray-600">{value}</span>

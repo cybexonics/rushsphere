@@ -24,7 +24,6 @@ const VendorLayout = () => {
 
   const handleLogout = () => {
     vendorLogout()
-    console.log(vendor)
     navigate("/")
   };
 
@@ -33,9 +32,10 @@ const VendorLayout = () => {
       {/* Desktop Sidebar */}
       <aside className="hidden lg:flex w-64 flex-col bg-white shadow-md border-r border-gray-200">
         <div className="p-6 border-b border-gray-200">
-          <h2 className="text-lg font-bold text-gray-800">{vendor?.shop_name}</h2>
-          <p className="text-sm text-gray-500">{vendor?.first_name} {vendor?.last_Name}</p>
+          <h2 className="text-lg font-bold text-gray-800">{vendor?.businessName}</h2>
+          <p className="text-sm text-gray-500">{vendor?.ownerName}</p>
         </div>
+        
         <nav className="px-4 py-6 space-y-1 flex-1">
           {navItems.map(({ label, to, icon: Icon }) => {
             const isActive = location.pathname === to;
@@ -67,8 +67,8 @@ const VendorLayout = () => {
       <div className="lg:hidden bg-white shadow-md border-b border-gray-200">
         <div className="flex items-center justify-between p-4">
           <div>
-            <h2 className="text-base font-bold text-gray-800">{vendor?.shop_name}</h2>
-            <p className="text-xs text-gray-500">{vendor?.first_name} {vendor?.last_Name}</p>
+            <h2 className="text-base font-bold text-gray-800">{vendor?.businessName}</h2>
+            <p className="text-sm text-gray-500">{vendor?.ownerName}</p>
           </div>
           <button
             onClick={handleLogout}

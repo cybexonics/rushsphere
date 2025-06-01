@@ -14,7 +14,7 @@ export default function ProductCreate() {
     old_price: 0,
     description: '',
     isNew: false,
-    categories: '',
+    category:'',
     subcategory: '',
     other: {},
   });
@@ -39,13 +39,12 @@ export default function ProductCreate() {
       const vendors = await getData('vendors');
       const categories = await getData('categories');
       const subcategories = await getData('subcategories?populate=*');
-      console.log(categories)
+      console.log(vendor)
       setVendorsList(vendors.data || []);
       setCategoriesList(categories.data || []);
       setSubcategoriesList(subcategories.data || []);
     };
     fetchLists();
-    console.log(vendor)
   }, []);
 
   const slugify = (text: string) =>
@@ -102,7 +101,7 @@ export default function ProductCreate() {
     setSaving(true);
 
 
-    const selectedCategory = categoriesList.find(c => c.documentId === form.categories);
+    const selectedCategory = categoriesList.find(c => c.documentId === form.category);
     const selectedSubcategory = subcategoriesList.find(s => s.documentId === form.subcategory);
 
     const categoryId = selectedCategory?.id;
@@ -126,8 +125,9 @@ export default function ProductCreate() {
         color: colorList,
         size: sizeList,
       },
-      categories: categoryId ? { connect: [{ id: categoryId }] } : undefined,
-      subcategory: subcategoryId ? { connect: [{ id: subcategoryId }] } : undefined,
+      vendor:vendor?.documentId ,
+      category: categoryId,
+      subcategory: subcategoryId,
       };
 
       await axios.post('http://localhost:1337/api/products', { data });
@@ -340,12 +340,12 @@ export default function ProductCreate() {
   <label className="block font-medium">Category</label>
   
   <select
-    name="categories"
-    value={form.categories}
+    name="category"
+    value={form.category}
     onChange={e => {
       setForm(prev => ({
         ...prev,
-        categories: e.target.value,
+        category: e.target.value,
         subcategory: '' // reset subcategory
       }));
     }}
@@ -369,7 +369,7 @@ export default function ProductCreate() {
   >
     <option value="">-- Select Subcategory --</option>
     {subcategoriesList
-      .filter(sub => sub.category?.documentId === form.categories)
+      .filter(sub => sub.category?.documentId === form.category)
       .map(sub => (
         <option key={sub.id} value={sub.documentId}>{sub.name}</option>
       ))}

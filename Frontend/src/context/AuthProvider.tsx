@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import { getData } from "@/lib/getData"
 import { useNavigate } from 'react-router-dom';
-const API_URL = 'http://localhost:1337/api'; // Update to your Strapi backend URL
 
 
 const AuthContext = createContext(undefined);
@@ -41,26 +40,11 @@ useEffect(() => {
 }, []);
   const login = async (identifier: string, password: string) => {
     try {
-    const userData = {
-      id:12345,
-      first_name:"Sanskar",
-      last_Name:"Bandgar",
-      email:"mr.sanskar19@gmail.com",
-      phone:"1234567890",
-      image:"/placholder.svg",
-      orders:[
-  { id: 'ORD-12345', date: '2025-05-10', status: 'Delivered', total: 129.99, items: 2 },
-  { id: 'ORD-12346', date: '2025-04-28', status: 'Processing', total: 79.50, items: 1 },
-  { id: 'ORD-12347', date: '2025-04-15', status: 'Shipped', total: 249.99, items: 3 }
-],
-wishlistItems : [
-  { id: '1', name: 'Wireless Earbuds', price: 89.99, image: '/placeholder.svg' },
-  { id: '2', name: 'Smart Watch', price: 199.99, image: '/placeholder.svg' },
-  { id: '3', name: 'Bluetooth Speaker', price: 59.99, image: '/placeholder.svg' }
-]
-    }
-    setUser(userData)
-    localStorage.setItem("user",JSON.stringify(userData))
+    const userData = await getData(`customers?filters[email][$eq]=${identifier}&filters[password][$eq]=${password}`)
+   const data = userData?.data[0]
+   console.log(data)
+    setUser(data)
+    localStorage.setItem("user",JSON.stringify(data))
     console.log("user set")
       // await fetchUser();
     } catch (err) {
@@ -71,23 +55,12 @@ wishlistItems : [
 
 const vendorLogin = async (identifier: string, password: string) => {
     try {
-    const userData = {
-      id:12345,
-      first_name:"Sanskar",
-      last_Name:"Bandgar",
-      email:"mr.sanskar19@gmail.com",
-      phone:"1234567890",
-      image:"/placholder.svg",
-      shop_name:"Print Studio",
-      orders:[
-  { id: 'ORD-12345', date: '2025-05-10', status: 'Delivered', total: 129.99, items: 2 },
-  { id: 'ORD-12346', date: '2025-04-28', status: 'Processing', total: 79.50, items: 1 },
-  { id: 'ORD-12347', date: '2025-04-15', status: 'Shipped', total: 249.99, items: 3 }
-]
-    }
-    setVendor(userData)
+   const userData = await getData(`vendors?filters[email][$eq]=${identifier}&filters[password][$eq]=${password}`)
+   const data = userData?.data[0]
+   console.log(data)
+    setVendor(data)
     setIsVendor(true)
-    localStorage.setItem("vendor",JSON.stringify(userData))
+    localStorage.setItem("vendor",JSON.stringify(data))
     navigate(`/vendor`)
       // await fetchUser();
     } catch (err) {

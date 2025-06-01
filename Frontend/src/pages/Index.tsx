@@ -18,7 +18,7 @@ const Index = () => {
     const category = await getData("categories?populate=*")
     const fetchedproducts = res?.data;
     const transformed = transformProductData(fetchedproducts);
-    console.log(category?.data)
+    console.log(transformed)
     setProducts(transformed)
     setCategories(category?.data)
   }

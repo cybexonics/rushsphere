@@ -1,0 +1,65 @@
+{
+  "kind": "collectionType",
+  "collectionName": "vendors",
+  "info": {
+    "singularName": "vendor",
+    "pluralName": "vendors",
+    "displayName": "vendor"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "businessName": {
+      "type": "string",
+      "required": true
+    },
+    "ownerName": {
+      "type": "string",
+      "required": true
+    },
+    "email": {
+      "type": "email",
+      "required": true,
+      "unique": true
+    },
+    "phone": {
+      "type": "biginteger",
+      "required": true,
+      "unique": true
+    },
+    "businessType": {
+      "type": "string",
+      "required": true
+    },
+    "zipCode": {
+      "type": "biginteger",
+      "required": true
+    },
+    "taxId": {
+      "type": "string",
+      "unique": true
+    },
+    "bankAccount": {
+      "type": "json",
+      "required": true
+    },
+    "password": {
+      "type": "string"
+    },
+    "businessAddress": {
+      "type": "json"
+    },
+    "products": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::product.product",
+      "mappedBy": "vendor"
+    },
+    "isApproved": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

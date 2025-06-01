@@ -53,7 +53,7 @@ const [imageUrls, setImageUrls] = useState([]);
           old_price: transformed?.old_price || 0,
           description: transformed?.description,
           isNew: transformed?.isNew,
-          categories: transformed?.categories?.id || '',
+          category: transformed?.category?.id || '',
           subcategory: transformed?.subcategory?.id || '',
           other: transformed?.other || {},
           features: transformed?.features,
@@ -391,12 +391,12 @@ try {
      <div>
   <label className="block font-medium">Category</label>
   <select
-    name="categories"
-    value={form.categories}
+    name="category"
+    value={form.category}
     onChange={e => {
       setForm(prev => ({
         ...prev,
-        categories: e.target.value,
+        category: e.target.value,
         subcategory: '' // reset subcategory on category change
       }));
     }}
@@ -421,7 +421,7 @@ try {
   >
     <option value="">-- Select Subcategory --</option>
     {subcategoriesList
-      .filter(sub => sub.category?.documentId === form.categories)
+      .filter(sub => sub.category?.documentId === form.category)
       .map(sub => (
         <option key={sub.id} value={sub.documentId}>
           {sub.name}

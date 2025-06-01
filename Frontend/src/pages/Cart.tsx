@@ -126,9 +126,9 @@ const Cart = () => {
                     <div className="col-span-3 md:col-span-2 text-right">
                       {item.product.old_price ? (
                         <div>
-                          <span className="line-through text-gray-400 text-sm">${item.product.old_price.toFixed(2)}</span>
+                          <span className="line-through text-gray-400 text-sm">${item.product.old_price}</span>
                           <span className="text-gray-800 font-medium ml-2">
-                            ${item.product.price.toFixed(2)}
+                            ${item.product.price}
                           </span>
                         </div>
                       ) : (

@@ -7,7 +7,7 @@ export function transformProductData(rawData) {
       name: item.name || '',
       slug:item.slug,
       description: item.description[0].trim(),
-      category: item.categories,
+      category: item.category,
       sub_categaory:item.subcategory,
       brand: 'Generic Brand',
       price: item.price || 0,
@@ -19,11 +19,11 @@ export function transformProductData(rawData) {
       images: item.images,
       isNew:item.isNew,
       vendor: {
-        vendor_id: item?.vendors?.[0]?.id,
-        name: item?.vendors?.[0]?.first_name,
-        contact_email: item?.vendors?.[0]?.email,
-        location: item?.vendors?.[0]?.location || "India",
-        rating: item?.vendors?.[0]?.reating || 4.5
+        vendor_id: item?.vendor?.documentId,
+        name: item?.vendor?.businessName,
+        contact_email: item?.vendor?.email,
+        location: item?.vendor?.[0]?.businessAddress?.city,
+        rating: item?.vendor?.[0]?.reating || 4.5
       },
       warranty: 'No warranty info',
       other: item.other,

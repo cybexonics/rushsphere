@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, useParams } from 'react-router-dom';
 import { Filter, SlidersHorizontal, ChevronDown, Search, X } from 'lucide-react';
 import Header from '@/components/Header';
 import ProductCard from '@/components/ProductCard';
@@ -17,7 +17,7 @@ import { transformProductData } from '@/lib/transformProductData';
 const categories = [
   { id: 'electronics', name: 'Electronics', count: 124 },
   { id: 'fashion', name: 'Fashion', count: 98 },
-  { id: 'home', name: 'Home & Garden', count: 56 },
+  { id: 'men-s', name: "Men's", count: 56 },
   { id: 'sports', name: 'Sports & Outdoors', count: 43 },
   { id: 'books', name: 'Books', count: 87 },
   { id: 'beauty', name: 'Beauty & Personal Care', count: 65 },
@@ -89,7 +89,7 @@ const AllProducts = () => {
   const query = searchParams.get('q') || '';
   const newOnly = searchParams.get('new') === 'true';
   const onSale = searchParams.get('sale') === 'true';
-
+  const { categoryName,subcategoryName } = useParams();
   useEffect(()=>{
     const fetchData = async() =>{
       const res = await getData("products?populate=*");
@@ -112,14 +112,10 @@ const AllProducts = () => {
     }
     
     // Filter by category
-    if (category && product.category !== category) {
+    if (category && product?.category?.slug !== categoryName) {
       return false;
     }
     
-    // Filter by brand
-    if (brand && product.brand !== brand) {
-      return false;
-    }
     
     // Filter by price range
     if (product.price < minPrice || product.price > maxPrice) {
@@ -132,7 +128,7 @@ const AllProducts = () => {
     }
     
     // Filter by "on sale" (has discount)
-    if (onSale && !product.discount) {
+    if (onSale && !product.old_price) {
       return false;
     }
     
