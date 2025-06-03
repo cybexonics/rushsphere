@@ -1,65 +1,108 @@
-
-
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Pencil, Trash2, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, XCircle } from 'lucide-react';
+import { getData } from '@/lib/getData';
+import axios from 'axios';
 
-const AdminProductApproval = () => {
-  const [pendingProducts, setPendingProducts] = useState([
-    {
-      id: 'P001',
-      name: 'Wireless Mouse',
-      vendor: 'TechZone',
-      category: 'Accessories',
-      price: '$25.00',
-    },
-    {
-      id: 'P002',
-      name: 'Smart Watch',
-      vendor: 'GearHub',
-      category: 'Wearables',
-      price: '$129.99',
-    },
-  ]);
+const VendorProductList = () => {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const approveProduct = (id: string) => {
-    setPendingProducts(prev => prev.filter(product => product.id !== id));
-    alert(`Product ${id} approved.`);
+  const fetchProducts = async () => {
+    try {
+      const res = await getData('products?populate=*');
+      console.log(res)
+      setProducts(res?.data || []);
+    } catch (err) {
+      console.error('Failed to load products:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const rejectProduct = (id: string) => {
-    setPendingProducts(prev => prev.filter(product => product.id !== id));
-    alert(`Product ${id} rejected.`);
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const handleDelete = async(id) => {
+    // TODO: Add API logic
+    await axios.delete(`https://rushsphere.onrender.com/api/products/${id}`)
   };
 
   return (
-    <div className="p-8">
-      <h2 className="text-2xl font-bold mb-6">Pending Product Approvals</h2>
-      <div className="space-y-4">
-        {pendingProducts.map(product => (
-          <div key={product.id} className="bg-white shadow rounded-lg p-4 flex justify-between items-center border">
-            <div>
-              <h4 className="text-lg font-semibold">{product.name}</h4>
-              <p className="text-sm text-gray-600">Vendor: {product.vendor} | Category: {product.category}</p>
-              <p className="text-sm text-gray-800">Price: {product.price}</p>
-            </div>
-            <div className="flex space-x-3">
-              <Button onClick={() => approveProduct(product.id)} className="bg-green-600 hover:bg-green-700 text-white">
-                <CheckCircle className="w-4 h-4 mr-1" /> Approve
-              </Button>
-              <Button onClick={() => rejectProduct(product.id)} variant="destructive">
-                <XCircle className="w-4 h-4 mr-1" /> Reject
-              </Button>
-            </div>
-          </div>
-        ))}
-        {pendingProducts.length === 0 && (
-          <p className="text-center text-gray-500">No pending products at the moment.</p>
-        )}
+    <div className="p-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">My Products</h1>
+          <p className="text-sm text-gray-600">Manage and edit your products.</p>
+        </div>
+        <Link to="/vendor/products/new">
+          <Button className="bg-green-600 hover:bg-green-700 text-white mt-4 sm:mt-0">
+            <Plus className="h-4 w-4 mr-2" />
+            Add New Product
+          </Button>
+        </Link>
+      </div>
+
+      {/* Product Table */}
+      <div className="overflow-x-auto bg-white rounded-xl shadow-sm border border-gray-100">
+        <table className="min-w-full divide-y divide-gray-200 text-sm">
+          <thead className="bg-gray-50 text-left">
+            <tr>
+              <th className="px-6 py-3 font-medium text-gray-500">Product</th>
+              <th className="px-6 py-3 font-medium text-gray-500">Category</th>
+              <th className="px-6 py-3 font-medium text-gray-500">Price</th>
+              <th className="px-6 py-3 font-medium text-gray-500">Vendor</th>
+              <th className="px-6 py-3 font-medium text-gray-500 text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100">
+            {loading ? (
+              <tr>
+                <td colSpan={5} className="px-6 py-4 text-center text-gray-500">Loading products...</td>
+              </tr>
+            ) : products.length === 0 ? (
+              <tr>
+                <td colSpan={5} className="px-6 py-4 text-center text-gray-500">No products found.</td>
+              </tr>
+            ) : (
+              products.map((product) => {
+                const imageUrl = product.images?.data?.[0]?.url || 'https://via.placeholder.com/80';
+                return (
+                  <tr key={product.id}>
+                    <td className="px-6 py-4 flex items-center gap-4">
+                      <img src={imageUrl} alt={product.name} className="w-12 h-12 rounded object-cover" />
+                      <div>
+                        <p className="font-medium text-gray-900">{product.name}</p>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-gray-700">{product.category?.name || '—'}</td>
+                    <td className="px-6 py-4 text-gray-700">${product.price}</td>
+                    <td className="px-6 py-4 text-gray-700">{product.vendors?.[0]?.first_name || '—'}</td>
+                    <td className="px-6 py-4 text-center">
+                      <div className="flex justify-center space-x-2">
+                        <Link to={`/vendor/products/edit/${product.slug}`}>
+                          <Button variant="outline" size="sm">
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                        </Link>
+                        <Button variant="destructive" size="sm" onClick={() => handleDelete(product.documentId)}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
   );
 };
 
-export default AdminProductApproval;
+export default VendorProductList;
 
