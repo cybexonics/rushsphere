@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Pencil, Trash2, Plus } from 'lucide-react';
+import { Pencil,Ban, Trash2, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { getData } from '@/lib/getData';
 import axios from 'axios';
@@ -90,6 +90,9 @@ const VendorProductList = () => {
                         </Link>
                         <Button variant="destructive" size="sm" onClick={() => handleDelete(product.documentId)}>
                           <Trash2 className="h-4 w-4" />
+                        </Button>
+                        <Button variant="destructive" size="sm" onClick={() => handleStock(product.documentId)}>
+                          <Ban className="h-4 w-4" />
                         </Button>
                       </div>
                     </td>

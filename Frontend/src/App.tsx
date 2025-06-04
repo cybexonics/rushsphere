@@ -20,6 +20,8 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Products from "./pages/Products";
 import Checkout from "./pages/Checkout";
 import NotFound from "./pages/NotFound";
+import ForgotPassword from "./pages/ForgotPassword"
+import PasswordReset from "./pages/PasswordReset"
 
 import VendorProducts from "./pages/vendor/Products";
 import CreateProduct from "./pages/vendor/CreateProduct";
@@ -39,6 +41,8 @@ import AdminVendors from './pages/admin/Vendors'
 
 import AuthProvider from "./context/AuthProvider";
 import CartProvider from "./context/CartProvider";
+
+//forgot-password
 
 const queryClient = new QueryClient();
 
@@ -73,6 +77,8 @@ const App = () => (
                 />
                 <Route path="/product/:slug" element={<ProductPage />} />
                 <Route path="*" element={<NotFound />} />
+                <Route path="/forgot-password" element={<ForgotPassword/>}/>
+                <Route path="/password-reset" element={<PasswordReset/>}/>
                 <Route path="/vendor" element={<VendorLayout />}>
                   <Route index path="/vendor" element={<VendorDashboard />} />
                   <Route path="/vendor/products" element={<VendorProducts />} />
