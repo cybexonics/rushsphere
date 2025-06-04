@@ -128,6 +128,7 @@ export default function ProductCreate() {
       vendor:vendor?.documentId ,
       category: categoryId,
       subcategory: subcategoryId,
+      availability:true,
       };
 
       await axios.post('https://rushsphere.onrender.com/api/products', { data });

@@ -467,6 +467,7 @@ export interface ApiOrderOrder extends Struct.CollectionTypeSchema {
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::order.order'> &
       Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
     orderId: Schema.Attribute.UID<'orderNo'>;
     orderNo: Schema.Attribute.String &
       Schema.Attribute.Required &
@@ -493,6 +494,7 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    availability: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
     category: Schema.Attribute.Relation<'manyToOne', 'api::category.category'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -587,6 +589,36 @@ export interface ApiSubcategorySubcategory extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiVendorOrderVendorOrder extends Struct.CollectionTypeSchema {
+  collectionName: 'vendor_orders';
+  info: {
+    displayName: 'vendor-order';
+    pluralName: 'vendor-orders';
+    singularName: 'vendor-order';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::vendor-order.vendor-order'
+    > &
+      Schema.Attribute.Private;
+    other: Schema.Attribute.JSON;
+    products: Schema.Attribute.JSON;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    vendor: Schema.Attribute.Relation<'manyToOne', 'api::vendor.vendor'>;
+  };
+}
+
 export interface ApiVendorVendor extends Struct.CollectionTypeSchema {
   collectionName: 'vendors';
   info: {
@@ -626,6 +658,10 @@ export interface ApiVendorVendor extends Struct.CollectionTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    vendor_orders: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::vendor-order.vendor-order'
+    >;
     zipCode: Schema.Attribute.BigInteger & Schema.Attribute.Required;
   };
 }
@@ -1145,6 +1181,7 @@ declare module '@strapi/strapi' {
       'api::product.product': ApiProductProduct;
       'api::review.review': ApiReviewReview;
       'api::subcategory.subcategory': ApiSubcategorySubcategory;
+      'api::vendor-order.vendor-order': ApiVendorOrderVendorOrder;
       'api::vendor.vendor': ApiVendorVendor;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;

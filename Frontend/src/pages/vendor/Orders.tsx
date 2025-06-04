@@ -1,71 +1,96 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
-const orders = [
-  {
-    id: 'ORD12345',
-    customer: 'John Doe',
-    date: '2025-05-24',
-    total: '$150.00',
-    status: 'Processing',
-  },
-  {
-    id: 'ORD12346',
-    customer: 'Jane Smith',
-    date: '2025-05-23',
-    total: '$320.00',
-    status: 'Shipped',
-  },
-];
+interface Order {
+  id: number;
+  customer: string;
+  total: string;
+  status: string;
+  date: string;
+}
 
-const statusColors = {
-  Processing: 'bg-yellow-100 text-yellow-800',
-  Shipped: 'bg-blue-100 text-blue-800',
-  Delivered: 'bg-green-100 text-green-800',
-  Cancelled: 'bg-red-100 text-red-800',
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case 'Pending':
+      return 'bg-yellow-100 text-yellow-800';
+    case 'Shipped':
+      return 'bg-blue-100 text-blue-800';
+    case 'Delivered':
+      return 'bg-green-100 text-green-800';
+    default:
+      return 'bg-gray-100 text-gray-800';
+  }
 };
 
-const OrderList = () => {
+const AdminOrdersPage = () => {
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const res = await axios.get('http://localhost:1337/api/vendor-orders?populate=*');
+        // Adapt this depending on your Strapi response structure
+        const formattedOrders = res.data.data
+        setOrders(formattedOrders);
+      } catch (err: any) {
+        setError('Failed to load orders.');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, []);
+
   return (
-    <div>
-      <h1 className="text-xl font-bold text-gray-800 mb-6">Orders</h1>
-      <div className="overflow-x-auto bg-white shadow rounded-lg">
-        <table className="min-w-full text-sm text-gray-700">
-          <thead className="bg-gray-100 border-b">
-            <tr>
-              <th className="px-6 py-3 text-left font-semibold">Order ID</th>
-              <th className="px-6 py-3 text-left font-semibold">Customer</th>
-              <th className="px-6 py-3 text-left font-semibold">Date</th>
-              <th className="px-6 py-3 text-left font-semibold">Total</th>
-              <th className="px-6 py-3 text-left font-semibold">Status</th>
-              <th className="px-6 py-3 text-left font-semibold">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {orders.map(order => (
-              <tr key={order.id} className="border-b hover:bg-gray-50">
-                <td className="px-6 py-4">{order.id}</td>
-                <td className="px-6 py-4">{order.customer}</td>
-                <td className="px-6 py-4">{order.date}</td>
-                <td className="px-6 py-4">{order.total}</td>
-                <td className="px-6 py-4">
-                  <span className={`px-2 py-1 rounded text-xs font-medium ${statusColors[order.status]}`}>
-                    {order.status}
-                  </span>
-                </td>
-                <td className="px-6 py-4">
-                  <Link to={`/vendor/orders/${order.id}`} className="text-green-600 hover:underline">
-                    View
-                  </Link>
-                </td>
+    <div className="p-8">
+      <h2 className="text-2xl font-bold mb-6">All Orders</h2>
+      {loading ? (
+        <p>Loading orders...</p>
+      ) : error ? (
+        <p className="text-red-500">{error}</p>
+      ) : orders.length === 0 ? (
+        <p className="text-center text-gray-500 mt-6">No orders found.</p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white shadow rounded-lg border">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="text-left px-6 py-3 font-medium text-gray-600">Order ID</th>
+                <th className="text-left px-6 py-3 font-medium text-gray-600">Customer</th>
+                <th className="text-left px-6 py-3 font-medium text-gray-600">Total</th>
+                <th className="text-left px-6 py-3 font-medium text-gray-600">Status</th>
+                <th className="text-left px-6 py-3 font-medium text-gray-600">Date</th>
+                <th className="text-left px-6 py-3 font-medium text-gray-600">Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {orders.map(order => (
+                <tr key={order.id} className="border-t">
+                  <td className="px-6 py-4 font-medium">#{order.orderNo}</td>
+                  <td className="px-6 py-4">{order.email}</td>
+                  <td className="px-6 py-4">{order.other.total.toFixed(2)}</td>
+                  <td className="px-6 py-4">
+                    <span className={`px-2 py-1 text-sm rounded-full font-medium ${getStatusColor(order.other.status)}`}>
+                      {order.other.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">{order.createdAt}</td>
+                  <td className="px-6 py-4">
+                    <a href={`/admin/order/${order.orderNo}`}>View</a>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };
 
-export default OrderList;
+export default AdminOrdersPage;
 

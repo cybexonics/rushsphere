@@ -41,6 +41,10 @@
     },
     "other": {
       "type": "json"
+    },
+    "name": {
+      "type": "string",
+      "required": true
     }
   }
 }

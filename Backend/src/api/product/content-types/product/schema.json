@@ -71,6 +71,10 @@
     "isApproved": {
       "type": "boolean",
       "default": false
+    },
+    "availability": {
+      "type": "boolean",
+      "default": true
     }
   }
 }

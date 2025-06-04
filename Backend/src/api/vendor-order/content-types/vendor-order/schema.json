@@ -1,0 +1,27 @@
+{
+  "kind": "collectionType",
+  "collectionName": "vendor_orders",
+  "info": {
+    "singularName": "vendor-order",
+    "pluralName": "vendor-orders",
+    "displayName": "vendor-order"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "products": {
+      "type": "json"
+    },
+    "other": {
+      "type": "json"
+    },
+    "vendor": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::vendor.vendor",
+      "inversedBy": "vendor_orders"
+    }
+  }
+}

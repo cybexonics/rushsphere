@@ -60,6 +60,12 @@
     "isApproved": {
       "type": "boolean",
       "default": false
+    },
+    "vendor_orders": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::vendor-order.vendor-order",
+      "mappedBy": "vendor"
     }
   }
 }

@@ -4,6 +4,7 @@ export function transformProductData(rawData) {
   return rawData.map((item) => {
     return {
       product_id: String(item.id),
+      isApproved,
       name: item.name || '',
       slug:item.slug,
       description: item.description[0].trim(),
@@ -12,7 +13,7 @@ export function transformProductData(rawData) {
       brand: 'Generic Brand',
       price: item.price || 0,
       old_price: item.old_price || 0,
-      availability: 'In Stock',
+      availability: item.availability,
       rating: 4.0,
       reviews_count: 0,
       features:item.features[0],

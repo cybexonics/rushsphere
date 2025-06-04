@@ -5,49 +5,16 @@ import { Truck, SendHorizonal, Loader2 } from 'lucide-react';
 import axios from 'axios';
 
 const AdminSingleOrderView = () => {
-  const { id } = useParams();
+  const { orderId } = useParams();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // For demo: Sample fallback order
-  const sampleOrder = {
-    id: 1234,
-    customer: {
-      first_name: 'John',
-      last_name: 'Doe',
-      email: 'john@example.com',
-      phone: '123-456-7890',
-    },
-    shipping_address: {
-      street: '123 Main St',
-      city: 'New York',
-      state: 'NY',
-      zip: '10001',
-      country: 'USA',
-    },
-    products: [
-      {
-        id: 1,
-        name: 'Wireless Mouse',
-        price: 29.99,
-        vendor: { id: 101, name: 'Vendor A', email: 'vendorA@example.com' },
-      },
-      {
-        id: 2,
-        name: 'Bluetooth Keyboard',
-        price: 49.99,
-        vendor: { id: 102, name: 'Vendor B', email: 'vendorB@example.com' },
-      },
-    ],
-    total_amount: 79.98,
-    status: 'Pending',
-    shipping_provider: '',
-  };
 
   const fetchOrder = async () => {
     try {
-      const res = await axios.get(`https://rushsphere.onrender.com/api/orders/${id}?populate[products][populate]=vendor&populate=customer&populate=shipping_address`);
+      const res = await axios.get(`http://localhost:1337/api/orders?filters[orderNo][$eq]=${orderId}`);
       setOrder(res.data?.data || sampleOrder); // fallback for demo
+      console.log(res.data?.data)
     } catch (err) {
       console.error('Failed to load order:', err);
       setOrder(sampleOrder); // fallback for demo
@@ -58,12 +25,11 @@ const AdminSingleOrderView = () => {
 
   useEffect(() => {
     fetchOrder();
-  }, [id]);
+  }, [orderId]);
 
   const handleSendToVendor = async (product) => {
     try {
-      // Simulate vendor notification (e.g. send email or API call)
-      alert(`Product "${product.name}" sent to ${product.vendor.name} (${product.vendor.email})`);
+      alert(`Product "${product.product.name}" sent to ${product.product.vendor.name} (${product.product.vendor.contact_email}) - ${product.quantity}`);
     } catch (err) {
       console.error('Failed to notify vendor:', err);
       alert('Failed to notify vendor.');
@@ -97,34 +63,35 @@ const AdminSingleOrderView = () => {
 
   return (
     <div className="p-6 max-w-4xl mx-auto bg-white rounded-xl shadow-sm">
-      <h1 className="text-2xl font-bold mb-4 text-gray-900">Order #{order.id}</h1>
+      <h1 className="text-2xl font-bold mb-4 text-gray-900">Order #{order?.[0]?.orderNo}</h1>
 
       {/* Customer Info */}
       <div className="mb-6">
         <h2 className="text-lg font-semibold text-gray-800 mb-2">Customer Info</h2>
-        <p><strong>Name:</strong> {order.customer.first_name} {order.customer.last_name}</p>
-        <p><strong>Email:</strong> {order.customer.email}</p>
-        <p><strong>Phone:</strong> {order.customer.phone}</p>
+        <p><strong>Name:</strong> {order?.[0]?.name}</p>
+        <p><strong>Email:</strong> {order?.[0]?.email}</p>
+        <p><strong>Phone:</strong> {order?.[0]?.phone}</p>
       </div>
 
       {/* Shipping Address */}
       <div className="mb-6">
         <h2 className="text-lg font-semibold text-gray-800 mb-2">Shipping Address</h2>
-        <p>{order.shipping_address.street}</p>
-        <p>{order.shipping_address.city}, {order.shipping_address.state} {order.shipping_address.zip}</p>
-        <p>{order.shipping_address.country}</p>
+        <p>{order?.[0]?.shipping_address?.street}</p>
+        <p>{order?.[0]?.shipping_address?.city}, {order?.[0]?.shipping_address?.state} {order?.[0]?.shipping_address?.zip}</p>
+        <p>{order?.[0]?.shipping_address?.country}</p>
       </div>
 
       {/* Products */}
       <div className="mb-6">
         <h2 className="text-lg font-semibold text-gray-800 mb-4">Products</h2>
         <ul className="space-y-4">
-          {order.products.map((product) => (
-            <li key={product.id} className="border rounded px-4 py-3 bg-gray-50 flex justify-between items-center">
+          {order?.[0]?.products?.map((product) => (
+            <li key={product?.id} className="border rounded px-4 py-3 bg-gray-50 flex justify-between items-center">
               <div>
-                <div className="font-medium text-gray-900">{product.name}</div>
-                <div className="text-sm text-gray-600">${product.price}</div>
-                <div className="text-sm text-gray-600">Vendor: {product.vendor?.name}</div>
+                <div className="font-medium text-gray-900">{product?.product?.name}</div>
+                <div className="text-sm text-gray-600">${product?.product?.price} * {product?.quantity}</div>
+                <div className="text-sm text-gray-600">{product?.other ? product?.other : product?.other[0]}</div>
+                <div className="text-sm text-gray-600">Vendor: {product?.product?.vendor?.name}</div>
               </div>
               <Button variant="outline" size="sm" onClick={() => handleSendToVendor(product)}>
                 <SendHorizonal className="h-4 w-4 mr-1" />
@@ -138,8 +105,8 @@ const AdminSingleOrderView = () => {
       {/* Summary */}
       <div className="mb-6">
         <h2 className="text-lg font-semibold text-gray-800 mb-2">Order Summary</h2>
-        <p><strong>Status:</strong> {order.status}</p>
-        <p><strong>Total:</strong> ${order.total_amount}</p>
+        <p><strong>Status:</strong> {order?.[0]?.other?.status}</p>
+        <p><strong>Total:</strong> ${order?.[0]?.other?.total.toFixed(2)}</p>
         <p><strong>Shipping Provider:</strong> {order.shipping_provider || 'Not assigned yet'}</p>
       </div>
 

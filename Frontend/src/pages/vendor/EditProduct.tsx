@@ -3,12 +3,14 @@ import { useParams } from 'react-router-dom';
 import { getData } from '@/lib/getData'
 import { transformProductData } from '@/lib/transformProductData'
 import axios from 'axios';
+import { useAuth } from "@/context/AuthProvider"
 
 export default function ProductAdminEdit() {
   const { slug } = useParams();
   const [form, setForm] = useState({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const {vendor} = useAuth()
 
   // Dropdown options
   const [vendorsList, setVendorsList] = useState([]);
@@ -156,6 +158,7 @@ try {
       description: [form.description],
       features: [featuresObj],
       other: updatedOther,
+      availability:true,
     };
 
 
