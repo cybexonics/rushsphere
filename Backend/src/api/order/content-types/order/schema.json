@@ -38,6 +38,9 @@
     "orderId": {
       "type": "uid",
       "targetField": "orderNo"
+    },
+    "other": {
+      "type": "json"
     }
   }
 }

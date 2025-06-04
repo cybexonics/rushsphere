@@ -1,12 +1,13 @@
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
-
-import React from 'react';
-
-const orders = [
-  { id: '#1001', customer: 'John Doe', total: '$199.99', status: 'Shipped', date: '2025-05-28' },
-  { id: '#1002', customer: 'Jane Smith', total: '$89.00', status: 'Pending', date: '2025-05-30' },
-  { id: '#1003', customer: 'Paul Walker', total: '$300.00', status: 'Delivered', date: '2025-05-27' },
-];
+interface Order {
+  id: number;
+  customer: string;
+  total: string;
+  status: string;
+  date: string;
+}
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -22,40 +23,71 @@ const getStatusColor = (status: string) => {
 };
 
 const AdminOrdersPage = () => {
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const res = await axios.get('http://localhost:1337/api/orders?populate=*');
+        // Adapt this depending on your Strapi response structure
+        const formattedOrders = res.data.data
+        setOrders(formattedOrders);
+      } catch (err: any) {
+        setError('Failed to load orders.');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, []);
+
   return (
     <div className="p-8">
       <h2 className="text-2xl font-bold mb-6">All Orders</h2>
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white shadow rounded-lg border">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="text-left px-6 py-3 font-medium text-gray-600">Order ID</th>
-              <th className="text-left px-6 py-3 font-medium text-gray-600">Customer</th>
-              <th className="text-left px-6 py-3 font-medium text-gray-600">Total</th>
-              <th className="text-left px-6 py-3 font-medium text-gray-600">Status</th>
-              <th className="text-left px-6 py-3 font-medium text-gray-600">Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {orders.map(order => (
-              <tr key={order.id} className="border-t">
-                <td className="px-6 py-4 font-medium">{order.id}</td>
-                <td className="px-6 py-4">{order.customer}</td>
-                <td className="px-6 py-4">{order.total}</td>
-                <td className="px-6 py-4">
-                  <span className={`px-2 py-1 text-sm rounded-full font-medium ${getStatusColor(order.status)}`}>
-                    {order.status}
-                  </span>
-                </td>
-                <td className="px-6 py-4">{order.date}</td>
+      {loading ? (
+        <p>Loading orders...</p>
+      ) : error ? (
+        <p className="text-red-500">{error}</p>
+      ) : orders.length === 0 ? (
+        <p className="text-center text-gray-500 mt-6">No orders found.</p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white shadow rounded-lg border">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="text-left px-6 py-3 font-medium text-gray-600">Order ID</th>
+                <th className="text-left px-6 py-3 font-medium text-gray-600">Customer</th>
+                <th className="text-left px-6 py-3 font-medium text-gray-600">Total</th>
+                <th className="text-left px-6 py-3 font-medium text-gray-600">Status</th>
+                <th className="text-left px-6 py-3 font-medium text-gray-600">Date</th>
+                <th className="text-left px-6 py-3 font-medium text-gray-600">Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-        {orders.length === 0 && (
-          <p className="text-center text-gray-500 mt-6">No orders found.</p>
-        )}
-      </div>
+            </thead>
+            <tbody>
+              {orders.map(order => (
+                <tr key={order.id} className="border-t">
+                  <td className="px-6 py-4 font-medium">#{order.orderNo}</td>
+                  <td className="px-6 py-4">{order.email}</td>
+                  <td className="px-6 py-4">{order.other.total.toFixed(2)}</td>
+                  <td className="px-6 py-4">
+                    <span className={`px-2 py-1 text-sm rounded-full font-medium ${getStatusColor(order.other.status)}`}>
+                      {order.other.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">{order.createdAt}</td>
+                  <td className="px-6 py-4">
+                    <a href={`/admin/order/${order.orderNo}`}>View</a>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };

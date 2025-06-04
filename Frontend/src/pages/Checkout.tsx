@@ -12,18 +12,43 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { useCart } from "@/context/CartProvider";
 
-const Checkout = () => {
-  const { toast } = useToast();
-  const { cart } = useCart();
-   const steps = [
+const loadRazorpay = () => {
+  return new Promise((resolve) => {
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
+
+const steps = [
     { id: 1, label: 'Cart' },
     { id: 2, label: 'Shipping' },
     { id: 3, label: 'Payment' },
     { id: 4, label: 'Confirmation' },
   ];
-  const [step, setStep] = useState<'shipping' | 'payment' | 'confirmation'>('shipping');
-  const [paymentMethod, setPaymentMethod] = useState<'credit_card' | 'paypal' | 'apple_pay'>('credit_card');
+const Checkout = () => {
+  const { toast } = useToast();
+  const { cart, clearCart } = useCart();
   
+  const [step, setStep] = useState('shipping');
+  const [paymentMethod, setPaymentMethod] = useState('credit_card');
+  const [loading, setLoading] = useState(false);
+  const [orderData, setOrderData] = useState(null);
+  
+  // Form states
+  const [shippingInfo, setShippingInfo] = useState({
+    email: '',
+    phone: '',
+    street: '',
+    city: '',
+    state: '',
+    zip: '',
+    country: '',
+    notes: ''
+  });
+
   const calculateSubtotal = () => {
     return cart.reduce((total, item) => {
       const price = item.product.discount ? 
@@ -35,29 +60,172 @@ const Checkout = () => {
 
   const subtotal = calculateSubtotal();
   const shipping = 5.99;
-  const tax = subtotal * 0.10; // 10% tax
+  const tax = subtotal * 0.10;
   const total = subtotal + shipping + tax;
-  
-  const handleContinueToPayment = (e: React.FormEvent) => {
-    e.preventDefault();
-    setStep('payment');
-    window.scrollTo(0, 0);
-  };
-  
-  const handlePlaceOrder = (e: React.FormEvent) => {
-    e.preventDefault();
-    setStep('confirmation');
-    toast({
-      title: "Order placed successfully!",
-      description: "Your order has been received and is being processed.",
-    });
-    window.scrollTo(0, 0);
+
+  const handleInputChange = (field, value) => {
+    setShippingInfo(prev => ({ ...prev, [field]: value }));
   };
 
-    const getStepStatus = (current: number) => {
-    const stepOrder = ['cart', 'shipping', 'payment', 'confirmation'];
-    const currentIndex = stepOrder.indexOf(step);
-    return currentIndex >= current ? 'completed' : currentIndex + 1 === current ? 'active' : 'pending';
+   const getStepStatus = (current: number) => {
+      const stepOrder = ['cart', 'shipping', 'payment', 'confirmation'];
+      const currentIndex = stepOrder.indexOf(step);
+      return currentIndex >= current ? 'completed' : currentIndex + 1 === current ? 'active' : 'pending';
+  };
+
+
+  const handleContinueToPayment = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      // Prepare order data
+      const orderPayload = {
+          
+          email: shippingInfo.email,
+          phone: shippingInfo.phone,
+        address: {
+          street: shippingInfo.street,
+          city: shippingInfo.city,
+          state: shippingInfo.state,
+          zip: shippingInfo.zip,
+          country: shippingInfo.country,
+        },
+        products: cart,
+        other:{
+          subtotal,
+          shipping,
+          tax,
+          total,
+          notes: shippingInfo.notes
+        },
+        payment:{
+          paymentMethod,
+        }
+      };
+
+      // Create order in backend
+      const response = await fetch(`http://localhost:1337/api/orders`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ data: orderPayload })
+      });
+
+      const result = await response.json();
+
+      console.log(result)
+
+      if (result) {
+        setOrderData(result.data);
+        setStep('payment');
+        window.scrollTo(0, 0);
+      }
+    } catch (error) {
+    console.log(error)
+      toast({
+        title: "Error",
+        description: "Failed to process order. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRazorpayPayment = async () => {
+    const isLoaded = await loadRazorpay();
+    
+    if (!isLoaded) {
+      toast({
+        title: "Error",
+        description: "Failed to load payment gateway",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const options = {
+      key: process.env.REACT_APP_RAZORPAY_KEY_ID,
+      amount: orderData.amount,
+      currency: orderData.currency,
+      name: "Your Store Name",
+      description: `Order #${orderData.orderNumber}`,
+      order_id: orderData.razorpayOrderId,
+      handler: async (response) => {
+        try {
+          // Verify payment
+          const verifyResponse = await fetch(`${process.env.REACT_APP_API_URL}/api/orders/verify-payment`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              razorpayOrderId: response.razorpay_order_id,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpaySignature: response.razorpay_signature,
+              orderId: orderData.orderId
+            })
+          });
+
+          const verifyResult = await verifyResponse.json();
+
+          if (verifyResult.success) {
+            setStep('confirmation');
+            clearCart();
+            toast({
+              title: "Payment Successful!",
+              description: "Your order has been placed successfully."
+            });
+          } else {
+            throw new Error('Payment verification failed');
+          }
+        } catch (error) {
+          toast({
+            title: "Payment Error",
+            description: "Payment verification failed. Please contact support.",
+            variant: "destructive"
+          });
+        }
+      },
+      prefill: {
+        email: shippingInfo.email,
+        contact: shippingInfo.phone
+      },
+      theme: {
+        color: "#3B82F6"
+      }
+    };
+
+    const paymentGateway = new window.Razorpay(options);
+    paymentGateway.open();
+  };
+
+  const handlePlaceOrder = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      if (paymentMethod === 'credit_card') {
+        await handleRazorpayPayment();
+      } else {
+        // Handle other payment methods
+        setStep('confirmation');
+        toast({
+          title: "Order placed successfully!",
+          description: "Your order has been received and is being processed.",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to place order. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -102,66 +270,64 @@ const Checkout = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Checkout Form */}
           <div className="lg:col-span-2">
-            {/* Shipping Information */}
-            {step === 'shipping' && (
-              <div className="bg-white rounded-lg shadow-md p-6">
-                <h2 className="text-xl font-semibold mb-6">Shipping Information</h2>
-                <form onSubmit={handleContinueToPayment}>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <Label htmlFor="firstName">First Name</Label>
-                      <Input id="firstName" placeholder="Enter your first name" required />
-                    </div>
-                    <div>
-                      <Label htmlFor="lastName">Last Name</Label>
-                      <Input id="lastName" placeholder="Enter your last name" required />
-                    </div>
-                    <div>
-                      <Label htmlFor="email">Email Address</Label>
-                      <Input id="email" type="email" placeholder="Enter your email" required />
-                    </div>
-                    <div>
-                      <Label htmlFor="phone">Phone Number</Label>
-                      <Input id="phone" type="tel" placeholder="Enter your phone number" required />
-                    </div>
-                    <div className="md:col-span-2">
-                      <Label htmlFor="address">Address</Label>
-                      <Input id="address" placeholder="Enter your street address" required />
-                    </div>
-                    <div>
-                      <Label htmlFor="city">City</Label>
-                      <Input id="city" placeholder="Enter your city" required />
-                    </div>
-                    <div>
-                      <Label htmlFor="state">State/Province</Label>
-                      <Input id="state" placeholder="Enter your state/province" required />
-                    </div>
-                    <div>
-                      <Label htmlFor="zipCode">ZIP/Postal Code</Label>
-                      <Input id="zipCode" placeholder="Enter your ZIP/postal code" required />
-                    </div>
-                    <div>
-                      <Label htmlFor="country">Country</Label>
-                      <Input id="country" placeholder="Enter your country" required />
-                    </div>
-                    <div className="md:col-span-2">
-                      <Label htmlFor="notes">Special Instructions (Optional)</Label>
-                      <Textarea id="notes" placeholder="Add any special delivery instructions" />
-                    </div>
-                  </div>
-                  
-                  <div className="flex justify-end mt-6">
-                    <Button 
-                      type="submit" 
-                      className="bg-gradient-to-r from-purple-600 to-blue-600 flex items-center gap-2"
-                    >
-                      Continue to Payment <ArrowRight className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </form>
-              </div>
-            )}
-            
+  {step === 'shipping' && (
+    <div className="bg-white rounded-lg shadow-md p-6">
+      <h2 className="text-xl font-semibold mb-6">Shipping Information</h2>
+      <form onSubmit={handleContinueToPayment}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Email & Phone */}
+          <div>
+            <Label htmlFor="email">Email Address</Label>
+            <Input id="email" type="email" placeholder="Enter your email" value={shippingInfo.email || ""} onChange={(e) => handleInputChange("email", e.target.value)} required />
+          </div>
+          <div>
+            <Label htmlFor="phone">Phone Number</Label>
+            <Input id="phone" type="tel" placeholder="Enter your phone number" value={shippingInfo.phone || ""} onChange={(e) => handleInputChange("phone", e.target.value)} required />
+          </div>
+
+          {/* Address Fields (combined into address JSON) */}
+          <div className="md:col-span-2">
+            <Label htmlFor="street">Street Address</Label>
+            <Input id="street" placeholder="Enter your street address" value={shippingInfo.street || ""} onChange={(e) => handleInputChange("street", e.target.value)} required />
+          </div>
+          <div>
+            <Label htmlFor="city">City</Label>
+            <Input id="city" placeholder="Enter your city" value={shippingInfo.city || ""} onChange={(e) => handleInputChange("city", e.target.value)} required />
+          </div>
+          <div>
+            <Label htmlFor="state">State/Province</Label>
+            <Input id="state" placeholder="Enter your state/province" value={shippingInfo.state || ""} onChange={(e) => handleInputChange("state", e.target.value)} required />
+          </div>
+          <div>
+            <Label htmlFor="zip">ZIP/Postal Code</Label>
+            <Input id="zip" placeholder="Enter your ZIP/postal code" value={shippingInfo.zip || ""} onChange={(e) => handleInputChange("zip", e.target.value)} required />
+          </div>
+          <div>
+            <Label htmlFor="country">Country</Label>
+            <Input id="country" placeholder="Enter your country" value={shippingInfo.country || ""} onChange={(e) => handleInputChange("country", e.target.value)} required />
+          </div>
+
+          {/* Optional Notes */}
+          <div className="md:col-span-2">
+            <Label htmlFor="notes">Special Instructions (Optional)</Label>
+            <Textarea id="notes" placeholder="Add any special delivery instructions" value={shippingInfo.notes || ""} onChange={(e) => handleInputChange("notes", e.target.value)} />
+          </div>
+        </div>
+
+        {/* Submit Button */}
+        <div className="flex justify-end mt-6">
+          <Button
+            type="submit"
+            className="bg-gradient-to-r from-purple-600 to-blue-600 flex items-center gap-2"
+          >
+            Continue to Payment <ArrowRight className="h-4 w-4" />
+          </Button>
+        </div>
+      </form>
+    </div>
+  )}
+
+
             {/* Payment Information */}
             {step === 'payment' && (
               <div className="bg-white rounded-lg shadow-md p-6">
@@ -341,3 +507,22 @@ const Checkout = () => {
 };
 
 export default Checkout;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

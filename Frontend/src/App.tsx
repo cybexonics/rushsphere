@@ -29,10 +29,13 @@ import VendorOrderView from "./pages/vendor/OrderView";
 
 import AdminLayout from "./components/AdminLayout";
 import Admin from "./pages/admin/Admin";
+import AdminOrderView from "./pages/admin/OrderView";
 import AdminLogin from "./pages/admin/login";
 import AdminProductApproval from './pages/admin/ProductApprove'
 import AdminProducts from './pages/admin/Products';
 import AdminOrdersPage from './pages/admin/Orders'
+import AdminCustomer from './pages/admin/Customers'
+import AdminVendors from './pages/admin/Vendors'
 
 import AuthProvider from "./context/AuthProvider";
 import CartProvider from "./context/CartProvider";
@@ -88,11 +91,14 @@ const App = () => (
                   />
                 </Route>
                 <Route path="/admin" element={<AdminLayout/>}>
-                <Route path="/admin" element={<Admin/>}/>
-                <Route path="/admin/login" element={<AdminLogin/>}/>
-                <Route path="/admin/products/pending" element={<AdminProductApproval />} />
-                <Route path="/admin/products" element={<AdminProducts />} />
-                <Route path="/admin/orders" element={<AdminOrdersPage />} />
+                  <Route path="/admin" element={<Admin/>}/>
+                  <Route path="/admin/order/:orderId" element={<AdminOrderView/>}/>
+                  <Route path="/admin/login" element={<AdminLogin/>}/>
+                  <Route path="/admin/products/pending" element={<AdminProductApproval />} />
+                  <Route path="/admin/products" element={<AdminProducts />} />
+                  <Route path="/admin/orders" element={<AdminOrdersPage />} />
+                  <Route path="/admin/customers" element={<AdminCustomer/>}/>
+                  <Route path="/admin/vendors" element={<AdminVendors/>}/>
                 </Route>
               </Route>
             </Routes>

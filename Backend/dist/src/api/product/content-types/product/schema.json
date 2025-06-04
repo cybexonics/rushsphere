@@ -67,6 +67,10 @@
             "relation": "oneToMany",
             "target": "api::review.review",
             "mappedBy": "product"
+        },
+        "isApproved": {
+            "type": "boolean",
+            "default": false
         }
     }
 }

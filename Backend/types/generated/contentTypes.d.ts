@@ -471,6 +471,7 @@ export interface ApiOrderOrder extends Struct.CollectionTypeSchema {
     orderNo: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.Unique;
+    other: Schema.Attribute.JSON;
     payment: Schema.Attribute.JSON & Schema.Attribute.Required;
     phone: Schema.Attribute.BigInteger;
     products: Schema.Attribute.JSON & Schema.Attribute.Required;
@@ -499,6 +500,7 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     description: Schema.Attribute.JSON;
     features: Schema.Attribute.JSON;
     images: Schema.Attribute.JSON;
+    isApproved: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     isNew: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
