@@ -23,7 +23,7 @@ const VendorProductList = () => {
 
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [products]);
 
   const handleDelete = async(id) => {
     // TODO: Add API logic
@@ -36,8 +36,6 @@ const VendorProductList = () => {
         availability:state,
       }
     })
-    console.log(res?.data)
-    alert(`set Out of Stock ${state}`)
   }
 
   return (
@@ -89,8 +87,8 @@ const VendorProductList = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 text-gray-700">{product.category?.name || '—'}</td>
-                    <td className="px-6 py-4 text-gray-700">${product.price}</td>
-                    <td className="px-6 py-4 text-gray-700">{product.vendors?.[0]?.first_name || '—'}</td>
+                    <td className="px-6 py-4 text-gray-700">₹{product.price}</td>
+                    <td className="px-6 py-4 text-gray-700">{product.vendors?.[0]?.name || '—'}</td>
                     <td className="px-6 py-4 text-center">
                       <div className="flex justify-center space-x-2">
                         <Link to={`/vendor/products/edit/${product.slug}`}>

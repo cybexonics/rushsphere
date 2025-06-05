@@ -16,7 +16,10 @@ import ProductPage from "./pages/ProductPage";
 import Cart from "./pages/Cart";
 import Profile from "./pages/Profile";
 import OrderTracking from "./pages/OrderTracking";
+
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermPolicy from "./pages/TermPolicy";
+
 import Products from "./pages/Products";
 import Checkout from "./pages/Checkout";
 import NotFound from "./pages/NotFound";
@@ -67,6 +70,9 @@ const App = () => (
                 <Route path="/products" element={<Products />} />
                 <Route path="/checkout" element={<Checkout />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/terms-of-service" element={<TermPolicy />} />
+                <Route path="/shipping-policy" element={<TermPolicy />} />
+                <Route path="/refund-policy" element={<TermPolicy />} />
                 <Route path="/orders/:orderId" element={<OrderTracking />} />
                 <Route
                   path="/category/:categoryName"

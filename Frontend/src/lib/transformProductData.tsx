@@ -23,7 +23,7 @@ export function transformProductData(rawData) {
         vendor_id: item?.vendor?.documentId,
         name: item?.vendor?.businessName,
         contact_email: item?.vendor?.email,
-        location: item?.vendor?.[0]?.businessAddress?.city,
+        location: item?.vendor?.zipCode,
         rating: item?.vendor?.[0]?.reating || 4.5
       },
       warranty: 'No warranty info',

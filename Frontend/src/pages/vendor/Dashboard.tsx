@@ -1,22 +1,51 @@
 
-import React from 'react';
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Plus, Package, TrendingUp, Users, DollarSign, Eye } from 'lucide-react';
+import { getData } from "@/lib/getData"
+import { transformProductData } from "@/lib/transformProductData"
 
 const VendorDashboard = () => {
+const [orders,setOrders] = useState([])
+const [information,setInformation] = useState({
+  products:0,
+  sales:0,
+  orders:0,
+  view:0,
+})
+  useEffect(()=>{
+  const storedVendorId = localStorage.getItem('vendor');
+     async function fetchData() {
+      try {
+        const [productRes, vendorOrders, categoriesRes, subcategoriesRes] = await Promise.all([
+          getData(`products?filters[vendor][$eq]=${storedVendorId}`),
+          getData('vendor-orders'),
+          getData('categories'),
+          getData('subcategories?populate=*'),
+        ]);
+
+        const fetchedProduct = productRes?.data;
+        const order = vendorOrders?.data
+        const transformed = transformProductData(fetchedProduct);
+        setInformation(prev => ({
+          ...prev,
+          orders:order.length,
+          products:transformed
+        }))
+        console.log(transformed)
+        setOrders(order)
+        }catch(error){
+          console.log(error)
+        }
+    }
+    fetchData();
+  },[])
   const stats = [
-    { label: 'Total Products', value: '48', icon: Package, color: 'blue' },
-    { label: 'Total Sales', value: '$12,450', icon: DollarSign, color: 'green' },
+    { label: 'Total Products', value: '0', icon: Package, color: 'blue' },
+    { label: 'Total Sales', value: '0', icon: DollarSign, color: 'green' },
     { label: 'Orders This Month', value: '156', icon: TrendingUp, color: 'purple' },
     { label: 'Store Views', value: '2,340', icon: Eye, color: 'orange' }
-  ];
-
-  const recentOrders = [
-    { id: '#12345', customer: 'John Doe', product: 'Wireless Headphones', amount: '$89.99', status: 'Pending' },
-    { id: '#12346', customer: 'Jane Smith', product: 'Smart Watch', amount: '$199.99', status: 'Shipped' },
-    { id: '#12347', customer: 'Mike Johnson', product: 'Phone Case', amount: '$29.99', status: 'Delivered' },
-    { id: '#12348', customer: 'Sarah Wilson', product: 'Bluetooth Speaker', amount: '$79.99', status: 'Processing' }
   ];
 
   const getStatusColor = (status: string) => {
@@ -78,17 +107,17 @@ const VendorDashboard = () => {
               </div>
               <div className="p-6">
                 <div className="space-y-4">
-                  {recentOrders?.map((order) => (
+                  {orders ? orders?.map((order) => (
                     <div key={order.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                       <div className="flex-1">
                         <div className="flex items-center space-x-4">
                           <div>
-                            <p className="font-medium text-gray-900">{order.id}</p>
-                            <p className="text-sm text-gray-600">{order.customer}</p>
+                            <p className="font-medium text-gray-900">{order?.id}</p>
+                            
                           </div>
                           <div className="flex-1">
-                            <p className="text-sm font-medium text-gray-900">{order.product}</p>
-                            <p className="text-sm text-gray-600">{order.amount}</p>
+                            <p className="text-sm font-medium text-gray-900">{order?.products}</p>
+                            <p className="text-sm text-gray-600">{order?.amount}</p>
                           </div>
                         </div>
                       </div>
@@ -96,7 +125,7 @@ const VendorDashboard = () => {
                         {order.status}
                       </span>
                     </div>
-                  ))}
+                  )) : <div className="text-center">No Order Found</div>}
                 </div>
               </div>
             </div>
