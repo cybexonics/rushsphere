@@ -31,7 +31,7 @@ const VendorProductList = () => {
   };
 
   const handleStock = async(id,state)=>{
-    const res = await axios.put(`http://localhost:1337/api/products/${id}`,{
+    const res = await axios.put(`https://rushsphere.onrender.com/api/products/${id}`,{
       data:{
         availability:state,
       }

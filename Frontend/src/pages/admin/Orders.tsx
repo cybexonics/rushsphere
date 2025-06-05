@@ -30,7 +30,7 @@ const AdminOrdersPage = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const res = await axios.get('http://localhost:1337/api/orders?populate=*');
+        const res = await axios.get('https://rushsphere.onrender.com/api/orders?populate=*');
         // Adapt this depending on your Strapi response structure
         const formattedOrders = res.data.data
         setOrders(formattedOrders);

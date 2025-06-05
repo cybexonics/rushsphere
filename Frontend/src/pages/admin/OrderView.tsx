@@ -12,7 +12,7 @@ const AdminSingleOrderView = () => {
 
   const fetchOrder = async () => {
     try {
-      const res = await axios.get(`http://localhost:1337/api/orders?filters[orderNo][$eq]=${orderId}`);
+      const res = await axios.get(`https://rushsphere.onrender.com/api/orders?filters[orderNo][$eq]=${orderId}`);
       setOrder(res.data?.data || sampleOrder); // fallback for demo
       console.log(res.data?.data)
     } catch (err) {

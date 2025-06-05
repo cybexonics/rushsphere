@@ -22,7 +22,7 @@ const AdminCategoriesPage = () => {
 
   const fetchCategories = async () => {
     try {
-      const res = await axios.get('http://localhost:1337/api/categories?populate=subcategories');
+      const res = await axios.get('https://rushsphere.onrender.com/api/categories?populate=subcategories');
       const data = res.data.data.map((item: any) => ({
         id: item.id,
         name: item.attributes.name,
@@ -46,7 +46,7 @@ const AdminCategoriesPage = () => {
 
   const handleAddCategory = async () => {
     try {
-      await axios.post('http://localhost:1337/api/categories', {
+      await axios.post('https://rushsphere.onrender.com/api/categories', {
         data: { name: newCategory },
       });
       setNewCategory('');
@@ -59,7 +59,7 @@ const AdminCategoriesPage = () => {
   const handleAddSubcategory = async () => {
     if (!selectedCategoryId) return;
     try {
-      const subRes = await axios.post('http://localhost:1337/api/subcategories', {
+      const subRes = await axios.post('https://rushsphere.onrender.com/api/subcategories', {
         data: { name: newSubcategory, category: selectedCategoryId },
       });
       setNewSubcategory('');

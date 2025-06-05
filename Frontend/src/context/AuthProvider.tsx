@@ -89,7 +89,7 @@ const AuthProvider = ({ children }) => {
   const signup = async (payload) => {
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:1337/api/customers`, {
+      const res = await fetch(`https://rushsphere.onrender.com/api/customers`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ data: payload }),
@@ -115,7 +115,7 @@ const AuthProvider = ({ children }) => {
   const vendorSignup = async (payload) => {
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:1337/api/vendors`, {
+      const res = await fetch(`https://rushsphere.onrender.com/api/vendors`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ data: payload }),
