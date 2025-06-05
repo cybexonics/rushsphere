@@ -30,6 +30,16 @@ const VendorProductList = () => {
     await axios.delete(`https://rushsphere.onrender.com/api/products/${id}`)
   };
 
+  const handleStock = async(id,state)=>{
+    const res = await axios.put(`http://localhost:1337/api/products/${id}`,{
+      data:{
+        availability:state,
+      }
+    })
+    console.log(res?.data)
+    alert(`set Out of Stock ${state}`)
+  }
+
   return (
     <div className="p-6">
       {/* Header */}
@@ -91,9 +101,15 @@ const VendorProductList = () => {
                         <Button variant="destructive" size="sm" onClick={() => handleDelete(product.documentId)}>
                           <Trash2 className="h-4 w-4" />
                         </Button>
-                        <Button variant="destructive" size="sm" onClick={() => handleStock(product.documentId)}>
-                          <Ban className="h-4 w-4" />
+                        {product.availability ? (
+                        <Button variant="destructive" size="sm" onClick={() => handleStock(product.documentId,false)}>
+                          <Ban className="h-4 w-4" /> Out of Stock
                         </Button>
+                        ): (
+                          <Button variant="destructive" size="sm" onClick={() => handleStock(product.documentId,true)}>
+                          <Ban className="h-4 w-4" /> In Stcok
+                        </Button>
+                        )}
                       </div>
                     </td>
                   </tr>

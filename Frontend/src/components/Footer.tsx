@@ -60,7 +60,7 @@ const Footer = () => {
       <div className="bg-gray-800 py-4 mt-4">
         <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center text-sm text-gray-400">
           <p>© 2024 RushSphere. All rights reserved.</p>
-          <p className="mt-2 md:mt-0">Developed by <span className="text-blue-300 font-medium">RushSphere Dev Team</span></p>
+          <p className="mt-2 md:mt-0">Developed by <span className="text-blue-300 font-medium"></span></p>
         </div>
       </div>
     </footer>
