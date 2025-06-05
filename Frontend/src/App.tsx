@@ -38,6 +38,7 @@ import AdminProducts from './pages/admin/Products';
 import AdminOrdersPage from './pages/admin/Orders'
 import AdminCustomer from './pages/admin/Customers'
 import AdminVendors from './pages/admin/Vendors'
+import AdminCategory from './pages/admin/Category'
 
 import AuthProvider from "./context/AuthProvider";
 import CartProvider from "./context/CartProvider";
@@ -105,6 +106,7 @@ const App = () => (
                   <Route path="/admin/orders" element={<AdminOrdersPage />} />
                   <Route path="/admin/customers" element={<AdminCustomer/>}/>
                   <Route path="/admin/vendors" element={<AdminVendors/>}/>
+                  <Route path="/admin/category" element={<AdminCategory/>}/>
                 </Route>
               </Route>
             </Routes>

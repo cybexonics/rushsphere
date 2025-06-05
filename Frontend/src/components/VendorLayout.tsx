@@ -9,8 +9,6 @@ const navItems = [
   { label: 'Dashboard', to: '/vendor/', icon: Home },
   { label: 'Products', to: '/vendor/products', icon: Package },
   { label: 'Orders', to: '/vendor/orders', icon: TrendingUp },
-  { label: 'Customers', to: '/vendor/customers', icon: Users },
-  { label: 'Analytics', to: '/vendor/analytics', icon: BarChart2 },
 ];
 
 const VendorLayout = () => {

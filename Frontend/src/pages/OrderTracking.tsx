@@ -128,7 +128,7 @@ const OrderTrackingPage = () => {
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Total</p>
-                    <p>${orderDetails.total.toFixed(2)}</p>
+                    <p>₹{orderDetails.total.toFixed(2)}</p>
                   </div>
                 </div>
 

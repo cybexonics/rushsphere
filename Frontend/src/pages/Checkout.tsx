@@ -39,6 +39,7 @@ const Checkout = () => {
   
   // Form states
   const [shippingInfo, setShippingInfo] = useState({
+    name:'',
     email: '',
     phone: '',
     street: '',
@@ -81,7 +82,7 @@ const Checkout = () => {
     try {
       // Prepare order data
       const orderPayload = {
-          
+          name:shippingInfo.name,
           email: shippingInfo.email,
           phone: shippingInfo.phone,
         address: {
@@ -101,6 +102,7 @@ const Checkout = () => {
         },
         payment:{
           paymentMethod,
+          status:"pendding"
         }
       };
 
@@ -150,7 +152,7 @@ const Checkout = () => {
       key: process.env.REACT_APP_RAZORPAY_KEY_ID,
       amount: orderData.amount,
       currency: orderData.currency,
-      name: "Your Store Name",
+      name: "RushPhere",
       description: `Order #${orderData.orderNumber}`,
       order_id: orderData.razorpayOrderId,
       handler: async (response) => {
@@ -276,6 +278,10 @@ const Checkout = () => {
       <form onSubmit={handleContinueToPayment}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Email & Phone */}
+          <div>
+            <Label htmlFor="name">Full Name</Label>
+            <Input id="name" type="text" placeholder="Enter your Full Name" value={shippingInfo.name || ""} onChange={(e) => handleInputChange("name", e.target.value)} required />
+          </div>
           <div>
             <Label htmlFor="email">Email Address</Label>
             <Input id="email" type="email" placeholder="Enter your email" value={shippingInfo.email || ""} onChange={(e) => handleInputChange("email", e.target.value)} required />
@@ -460,7 +466,7 @@ const Checkout = () => {
                     </div>
                     <div className="text-right">
                       <span className="text-sm font-medium">
-                        ${((item.product.discount ? item.product.price * (1 - item.product.discount / 100) : item.product.price) * item.quantity).toFixed(2)}
+                        ₹{((item.product.discount ? item.product.price * (1 - item.product.discount / 100) : item.product.price) * item.quantity).toFixed(2)}
                       </span>
                     </div>
                   </div>
@@ -472,22 +478,22 @@ const Checkout = () => {
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Subtotal</span>
-                  <span className="font-medium">${subtotal.toFixed(2)}</span>
+                  <span className="font-medium">₹{subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Shipping</span>
-                  <span className="font-medium">${shipping.toFixed(2)}</span>
+                  <span className="font-medium">₹{shipping.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Tax</span>
-                  <span className="font-medium">${tax.toFixed(2)}</span>
+                  <span className="font-medium">₹{tax.toFixed(2)}</span>
                 </div>
                 
                 <Separator className="my-4" />
                 
                 <div className="flex justify-between text-base font-semibold">
                   <span>Total</span>
-                  <span>${total.toFixed(2)}</span>
+                  <span>₹{total.toFixed(2)}</span>
                 </div>
               </div>
               

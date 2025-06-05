@@ -4,11 +4,11 @@ import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { Mail, User } from 'lucide-react';
+import { useAuth } from "@/context/AuthProvider";
 
 const CustomerRegister = () => {
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
+    name:'',
     email: '',
     password: '',
     confirmPassword: '',
@@ -16,14 +16,26 @@ const CustomerRegister = () => {
     acceptTerms: false
   });
 
+  const { signup } = useAuth();
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
       alert('Passwords do not match');
       return;
     }
-    console.log('Customer registration:', formData);
-    // Handle registration logic here
+
+    signup({
+    name:formData.name,
+    email:formData.email,
+    phone:formData.phone,
+    password:formData.password,
+    orders:[],
+    wishlist:[],
+    image:[],
+    address:[],
+    cart:[]
+    })
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,36 +61,20 @@ const CustomerRegister = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-gray-700 text-sm font-semibold mb-2">
                   First Name
                 </label>
                 <input
                   type="text"
-                  name="firstName"
-                  value={formData.firstName}
+                  name="name"
+                  value={formData.name}
                   onChange={handleChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="First name"
+                  placeholder="Full Name"
                   required
                 />
               </div>
-              <div>
-                <label className="block text-gray-700 text-sm font-semibold mb-2">
-                  Last Name
-                </label>
-                <input
-                  type="text"
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Last name"
-                  required
-                />
-              </div>
-            </div>
 
             <div>
               <label className="block text-gray-700 text-sm font-semibold mb-2">

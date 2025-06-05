@@ -4,7 +4,7 @@ export function transformProductData(rawData) {
   return rawData.map((item) => {
     return {
       product_id: String(item.id),
-      isApproved,
+      isApproved:item.isApproved,
       name: item.name || '',
       slug:item.slug,
       description: item.description[0].trim(),

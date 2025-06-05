@@ -125,20 +125,20 @@ const Cart = () => {
                     <div className="col-span-3 md:col-span-2 text-right">
                       {item.product.old_price ? (
                         <div>
-                          <span className="line-through text-gray-400 text-sm">${item.product.old_price}</span>
+                          <span className="line-through text-gray-400 text-sm">₹{item.product.old_price}</span>
                           <span className="text-gray-800 font-medium ml-2">
                             ${item.product.price}
                           </span>
                         </div>
                       ) : (
-                        <span className="text-gray-800 font-medium">${item.product.price}</span>
+                        <span className="text-gray-800 font-medium">₹{item.product.price}</span>
                       )}
                     </div>
 
                     {/* Total price */}
                     <div className="col-span-3 md:col-span-1 text-right">
                       <div className="flex flex-col text-gray-800 font-medium">
-                        ${((item.product.old_price ? item.product.price : item.product.price) * item.quantity).toFixed(2)}
+                        ₹{((item.product.old_price ? item.product.price : item.product.price) * item.quantity).toFixed(2)}
                       </div>
                     </div>
 
@@ -165,22 +165,22 @@ const Cart = () => {
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Subtotal</span>
-                    <span className="font-medium">${subtotal.toFixed(2)}</span>
+                    <span className="font-medium">₹{subtotal.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Shipping</span>
-                    <span className="font-medium">${shipping.toFixed(2)}</span>
+                    <span className="font-medium">₹{shipping.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Tax</span>
-                    <span className="font-medium">${tax.toFixed(2)}</span>
+                    <span className="font-medium">₹{tax.toFixed(2)}</span>
                   </div>
                   
                   <Separator className="my-4" />
                   
                   <div className="flex justify-between text-base font-semibold">
                     <span>Total</span>
-                    <span>${total.toFixed(2)}</span>
+                    <span>₹{total.toFixed(2)}</span>
                   </div>
                 </div>
 

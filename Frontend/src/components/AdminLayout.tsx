@@ -10,7 +10,7 @@ const navItems = [
   { label: 'Products', to: '/admin/products', icon: Package },
   { label: 'Orders', to: '/admin/orders', icon: TrendingUp },
   { label: 'Customers', to: '/admin/customers', icon: Users },
-  { label: 'Analytics', to: '/admin/analytics', icon: BarChart2 },
+  { label: 'Category', to: '/admin/category', icon: Users }
 ];
 
 const VendorLayout = () => {
@@ -32,8 +32,7 @@ const VendorLayout = () => {
       {/* Desktop Sidebar */}
       <aside className="hidden lg:flex w-64 flex-col bg-white shadow-md border-r border-gray-200">
         <div className="p-6 border-b border-gray-200">
-          <h2 className="text-lg font-bold text-gray-800">{vendor?.businessName}</h2>
-          <p className="text-sm text-gray-500">{vendor?.ownerName}</p>
+          <h2 className="text-lg font-bold text-gray-800">Admin Dashbaord</h2>
         </div>
         
         <nav className="px-4 py-6 space-y-1 flex-1">

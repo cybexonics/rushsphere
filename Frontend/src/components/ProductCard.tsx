@@ -82,9 +82,9 @@ const ProductCard = ({
 
         <div className="flex items-center justify-between mt-auto">
           <div>
-            <span className="text-lg font-bold text-indigo-600">${price}</span>
+            <span className="text-lg font-bold text-indigo-600">₹{price}</span>
             {old_price !== 0 && (
-              <span className="text-sm text-slate-500 line-through ml-2">${old_price}</span>
+              <span className="text-sm text-slate-500 line-through ml-2">₹{old_price}</span>
             )}
           </div>
           <Button 

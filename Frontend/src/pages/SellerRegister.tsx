@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { Mail, User } from 'lucide-react';
+import { useAuth } from '@/context/AuthProvider';
 
 const SellerRegister = () => {
   const [formData, setFormData] = useState({
@@ -19,9 +20,11 @@ const SellerRegister = () => {
     bankAccount: '',
     password: '',
     confirmPassword: '',
-    acceptTerms: false
+    acceptTerms: false,
+    isApproved:false,
   });
 
+  const { vendorSignup } = useAuth();
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -30,18 +33,26 @@ const SellerRegister = () => {
       alert('Passwords do not match');
       return;
     }
-    
-    console.log('Seller registration:', formData);
-    
-    // Simulate sending email to admin
-    console.log('Email sent to admin: New seller registration pending approval');
-    console.log('Seller details:', {
+
+    vendorSignup({
       businessName: formData.businessName,
       ownerName: formData.ownerName,
       email: formData.email,
-      businessType: formData.businessType
-    });
-    
+      phone: formData.phone,
+      businessType: formData.businessType,
+      businessAddress: {
+        address:formData.businessAddress,
+        city:formData.city,
+        state:formData.state,
+        state: formData.state,
+      },
+      zipCode: formData.zipCode,
+      bankAccount: {
+        upi:formData.bankAccount
+      },
+      password: formData.password,
+      isApproved:false,
+    })
     setIsSubmitted(true);
   };
 

@@ -27,6 +27,9 @@ const AuthProvider = ({ children }) => {
     if (storedVendorId) {
       const vendorData = await getData(`vendors/${storedVendorId}`);
       if (vendorData) {
+      if(!vendorData.data.isApproved) {
+         navigate(`/not-approved`);
+      }
         setVendor(vendorData.data);
         setIsVendor(true);
       }
@@ -70,13 +73,13 @@ const AuthProvider = ({ children }) => {
       const data = res?.data[0];
 
       if (!data) throw new Error('Invalid credentials');
-
+      if(!data.isApproved) navigate(`/not-approved`);
       setVendor(data);
       setIsVendor(true);
       localStorage.setItem('vendor', data.documentId);
       navigate(`/vendor`);
     } catch (err) {
-      throw new Error('Invalid credentials. Please check your email and password.');
+      alert('Invalid credentials. Please check your email and password.');
     } finally {
       setLoading(false);
     }
@@ -86,7 +89,7 @@ const AuthProvider = ({ children }) => {
   const signup = async (payload) => {
     setLoading(true);
     try {
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/customers`, {
+      const res = await fetch(`http://localhost:1337/api/customers`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ data: payload }),
@@ -94,12 +97,12 @@ const AuthProvider = ({ children }) => {
 
       const json = await res.json();
       if (!res.ok) throw new Error(json?.error?.message || 'Signup failed');
-
-      const customerId = json.data.id;
+      const customerId = json.data.documentId;
       const customerData = await getData(`customers/${customerId}`);
-
+      
       setUser(customerData);
       localStorage.setItem('user', customerId);
+      navigate(`/profile`);
     } catch (err) {
       console.error('Signup error:', err);
       throw err;
@@ -112,24 +115,29 @@ const AuthProvider = ({ children }) => {
   const vendorSignup = async (payload) => {
     setLoading(true);
     try {
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/vendors`, {
+      const res = await fetch(`http://localhost:1337/api/vendors`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ data: payload }),
       });
 
       const json = await res.json();
-      if (!res.ok) throw new Error(json?.error?.message || 'Signup failed');
+      console.log(json)
+      if (!res.ok){
+        console.log(json?.error?.message || 'Signup failed');
+        navigate(`/failed`);
+      }
 
       const vendorId = json.data.id;
       const vendorData = await getData(`vendors/${vendorId}`);
-
+      console.log(vendorData,json)
       setVendor(vendorData);
       setIsVendor(true);
       localStorage.setItem('vendor', vendorId);
       navigate(`/vendor`);
     } catch (err) {
       console.error('Vendor signup error:', err);
+      console.log(err)
       throw err;
     } finally {
       setLoading(false);

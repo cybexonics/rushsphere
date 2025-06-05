@@ -22,7 +22,8 @@ const Profile = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!user) {
+  const storedUserId = localStorage.getItem('user');
+    if (!storedUserId) {
       navigate('/login'); // or use /login
     }
   }, [user]);
@@ -35,7 +36,6 @@ const Profile = () => {
   }
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
 
       <main className="container mx-auto px-4 py-8">
         <Tabs defaultValue="account" className="w-full">
@@ -47,7 +47,7 @@ const Profile = () => {
                   <div className="flex flex-col items-center">
                     <Avatar className="h-24 w-24 mb-4">
                       <AvatarImage src={user?.image} alt={user?.name} />
-                      <AvatarFallback>{user?.name[0]}</AvatarFallback>
+                      <AvatarFallback>{user?.name}</AvatarFallback>
                     </Avatar>
                     <h2 className="text-xl font-bold">{user?.name}</h2>
                     <p className="text-gray-500 mb-6">{user?.email}</p>
