@@ -63,7 +63,7 @@ const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
   };
 
   const addToCart = async (product: Product,other :any,quantity: number = 1) => {
-    const existing = cart.find((item) => item.product.id === product.id);
+    const existing = cart.find((item) => item.product.sku === product.sku);
     const updatedCart = existing
       ? cart.map((item) =>
           item.product.id === product.id ? { ...item, quantity: item.quantity + quantity } : item

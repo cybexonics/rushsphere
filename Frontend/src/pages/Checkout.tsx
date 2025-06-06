@@ -106,8 +106,8 @@ const Checkout = () => {
         }
       };
 
-      // Create order in backend
-      const response = await fetch(`http://localhost:1337/api/orders`, {
+      console.log(orderPayload)
+      const response = await fetch(`https://rushsphere.onrender.com/api/orders`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

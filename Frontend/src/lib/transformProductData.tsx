@@ -1,6 +1,7 @@
 // src/utils/transformProductData.js
 
 export function transformProductData(rawData) {
+console.log(rawData)
   return rawData.map((item) => {
     return {
       product_id: String(item.id),
@@ -9,13 +10,12 @@ export function transformProductData(rawData) {
       slug:item.slug,
       description: item.description[0].trim(),
       category: item.category,
-      sub_categaory:item.subcategory,
+      subcategory:item.subcategory,
       brand: 'Generic Brand',
       price: item.price || 0,
       old_price: item.old_price || 0,
       availability: item.availability,
       rating: 4.0,
-      reviews_count: 0,
       features:item.features[0],
       images: item.images,
       isNew:item.isNew,
@@ -30,7 +30,8 @@ export function transformProductData(rawData) {
       other: item.other,
       sku: item.documentId || '',
       created_at: item.createdAt,
-      updated_at: item.updatedAt
+      updated_at: item.updatedAt,
+      reviews:item.reviews,
     };
   });
 }

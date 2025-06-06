@@ -42,11 +42,12 @@ import AdminOrdersPage from './pages/admin/Orders'
 import AdminCustomer from './pages/admin/Customers'
 import AdminVendors from './pages/admin/Vendors'
 import AdminCategory from './pages/admin/Category'
+import VendorApprove from './pages/admin/VendorApprove'
 
 import AuthProvider from "./context/AuthProvider";
 import CartProvider from "./context/CartProvider";
 
-//forgot-password
+//VendorApprove
 
 const queryClient = new QueryClient();
 
@@ -108,6 +109,7 @@ const App = () => (
                   <Route path="/admin/order/:orderId" element={<AdminOrderView/>}/>
                   <Route path="/admin/login" element={<AdminLogin/>}/>
                   <Route path="/admin/products/pending" element={<AdminProductApproval />} />
+                  <Route path="/admin/vendors/pending" element={<VendorApprove />} />
                   <Route path="/admin/products" element={<AdminProducts />} />
                   <Route path="/admin/orders" element={<AdminOrdersPage />} />
                   <Route path="/admin/customers" element={<AdminCustomer/>}/>

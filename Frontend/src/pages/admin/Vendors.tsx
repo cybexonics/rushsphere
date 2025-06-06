@@ -72,11 +72,7 @@ const CustomerList = () => {
                     <td className="px-6 py-4 text-gray-700">
                       {address.city || '—'}, {address.state || ''} {address.country || ''}
                     </td>
-                    <td className="px-6 py-4 text-center">
-                      <Button variant="outline" size="sm">
-                        <Eye className="w-4 h-4" />
-                      </Button>
-                    </td>
+                    
                   </tr>
                 );
               })

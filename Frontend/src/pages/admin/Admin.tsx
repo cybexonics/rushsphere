@@ -21,8 +21,8 @@ const AdminDashboard = () => {
   ];
 
   const pendingApprovals = [
-    { label: 'Pending Products', count: 12, link: '/admin/products/pending', icon: Clock },
-    { label: 'Pending Vendors', count: 5, link: '/admin/vendors/pending', icon: Clock }
+    { label: 'Pending Products', link: '/admin/products/pending', icon: Clock },
+    { label: 'Pending Vendors', link: '/admin/vendors/pending', icon: Clock }
   ];
 
   return (
@@ -70,7 +70,7 @@ const AdminDashboard = () => {
                     </div>
                     <Link to={item.link}>
                       <span className="px-3 py-1 bg-yellow-100 text-yellow-800 text-sm rounded-full font-medium">
-                        {item.count} Pending
+                        View
                       </span>
                     </Link>
                   </div>
@@ -96,29 +96,13 @@ const AdminDashboard = () => {
                     Manage Vendors
                   </Button>
                 </Link>
-                <Link to="/admin/categories" className="block">
+                <Link to="/admin/category" className="block">
                   <Button variant="outline" className="w-full justify-start">
                     <Layers className="h-4 w-4 mr-2" />
                     Manage Categories
                   </Button>
                 </Link>
-                <Link to="/admin/subcategories" className="block">
-                  <Button variant="outline" className="w-full justify-start">
-                    <List className="h-4 w-4 mr-2" />
-                    Manage Subcategories
-                  </Button>
-                </Link>
               </div>
-            </div>
-
-            <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl p-6 text-white">
-              <h3 className="text-lg font-bold mb-2">System Maintenance</h3>
-              <p className="text-green-100 mb-4 text-sm">
-                Keep the platform clean and operational by reviewing flagged content regularly.
-              </p>
-              <Button variant="secondary" size="sm" className="bg-white text-green-600 hover:bg-green-50">
-                Review Now
-              </Button>
             </div>
           </div>
         </div>

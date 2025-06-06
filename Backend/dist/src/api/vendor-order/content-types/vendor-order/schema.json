@@ -22,6 +22,9 @@
             "relation": "manyToOne",
             "target": "api::vendor.vendor",
             "inversedBy": "vendor_orders"
+        },
+        "order": {
+            "type": "json"
         }
     }
 }

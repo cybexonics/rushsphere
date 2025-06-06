@@ -75,7 +75,7 @@ const AdminOrdersPage = () => {
                   <td className="px-6 py-4">{order.other.total.toFixed(2)}</td>
                   <td className="px-6 py-4">
                     <span className={`px-2 py-1 text-sm rounded-full font-medium ${getStatusColor(order.other.status)}`}>
-                      {order.other.status}
+                      {order?.other?.status}
                     </span>
                   </td>
                   <td className="px-6 py-4">{order.createdAt}</td>

@@ -60,7 +60,7 @@ const AdminOrdersPage = () => {
             <thead className="bg-gray-50">
               <tr>
                 <th className="text-left px-6 py-3 font-medium text-gray-600">Order ID</th>
-                <th className="text-left px-6 py-3 font-medium text-gray-600">Customer</th>
+                <th className="text-left px-6 py-3 font-medium text-gray-600">Product</th>
                 <th className="text-left px-6 py-3 font-medium text-gray-600">Total</th>
                 <th className="text-left px-6 py-3 font-medium text-gray-600">Status</th>
                 <th className="text-left px-6 py-3 font-medium text-gray-600">Date</th>
@@ -70,9 +70,9 @@ const AdminOrdersPage = () => {
             <tbody>
               {orders.map(order => (
                 <tr key={order.id} className="border-t">
-                  <td className="px-6 py-4 font-medium">#{order.orderNo}</td>
-                  <td className="px-6 py-4">{order.email}</td>
-                  <td className="px-6 py-4">{order.other.total.toFixed(2)}</td>
+                  <td className="px-6 py-4 font-medium">#{order.other.orderNo}</td>
+                  <td className="px-6 py-4">{order.products?.name}</td>
+                  <td className="px-6 py-4">{order.other?.total}</td>
                   <td className="px-6 py-4">
                     <span className={`px-2 py-1 text-sm rounded-full font-medium ${getStatusColor(order.other.status)}`}>
                       {order.other.status}
@@ -80,7 +80,7 @@ const AdminOrdersPage = () => {
                   </td>
                   <td className="px-6 py-4">{order.createdAt}</td>
                   <td className="px-6 py-4">
-                    <a href={`/admin/order/${order.orderNo}`}>View</a>
+                    <a href={`/vendor/orders/${order.documentId}`}>View</a>
                   </td>
                 </tr>
               ))}

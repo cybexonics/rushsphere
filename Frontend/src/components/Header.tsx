@@ -198,11 +198,19 @@ const Header = () => {
               <Button variant="ghost" className="justify-start px-2 py-3 hover:bg-slate-100" onClick={() => { navigate('/cart'); setIsMenuOpen(false); }}>
                 Cart ({cart.length})
               </Button>
-              {user && (
-              <Button variant="ghost" className="justify-start px-2 py-3 hover:bg-slate-100" onClick={() => { navigate('/profile'); setIsMenuOpen(false); }}>
+               {(user || vendor) && (
+                    <Button variant="ghost" className="justify-start px-2 py-3 hover:bg-slate-100" onClick={() => {
+                if (vendor) {
+                  navigate('/vendor');
+                } else if (user) {
+                  navigate('/profile');
+                }
+                setIsMenuOpen(false);
+              }}>
                 My Account
               </Button>
-              )}
+      )}
+             
 
               <div className="py-3 border-t border-slate-200">
                 <h3 className="font-semibold mb-2 px-2">Categories</h3>

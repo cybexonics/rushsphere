@@ -609,6 +609,7 @@ export interface ApiVendorOrderVendorOrder extends Struct.CollectionTypeSchema {
       'api::vendor-order.vendor-order'
     > &
       Schema.Attribute.Private;
+    order: Schema.Attribute.JSON;
     other: Schema.Attribute.JSON;
     products: Schema.Attribute.JSON;
     publishedAt: Schema.Attribute.DateTime;
@@ -654,7 +655,6 @@ export interface ApiVendorVendor extends Struct.CollectionTypeSchema {
       Schema.Attribute.Unique;
     products: Schema.Attribute.Relation<'oneToMany', 'api::product.product'>;
     publishedAt: Schema.Attribute.DateTime;
-    taxId: Schema.Attribute.String & Schema.Attribute.Unique;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

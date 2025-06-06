@@ -37,10 +37,6 @@
       "type": "biginteger",
       "required": true
     },
-    "taxId": {
-      "type": "string",
-      "unique": true
-    },
     "bankAccount": {
       "type": "json",
       "required": true

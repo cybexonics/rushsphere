@@ -9,6 +9,7 @@ const navItems = [
   { label: 'Dashboard', to: '/admin/', icon: Home },
   { label: 'Products', to: '/admin/products', icon: Package },
   { label: 'Orders', to: '/admin/orders', icon: TrendingUp },
+  { label:'Vendors' ,to: '/admin/vendors', icon: Users},
   { label: 'Customers', to: '/admin/customers', icon: Users },
   { label: 'Category', to: '/admin/category', icon: Users }
 ];

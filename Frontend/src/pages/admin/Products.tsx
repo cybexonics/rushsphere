@@ -55,6 +55,7 @@ const VendorProductList = () => {
               <th className="px-6 py-3 font-medium text-gray-500">Category</th>
               <th className="px-6 py-3 font-medium text-gray-500">Price</th>
               <th className="px-6 py-3 font-medium text-gray-500">Vendor</th>
+              <th className="px-6 py-3 font-medium text-gray-500">Status</th>
               <th className="px-6 py-3 font-medium text-gray-500 text-center">Actions</th>
             </tr>
           </thead>
@@ -69,18 +70,30 @@ const VendorProductList = () => {
               </tr>
             ) : (
               products.map((product) => {
-                const imageUrl = product.images?.data?.[0]?.url || 'https://via.placeholder.com/80';
+                const imageUrl = product.images[0] || 'https://via.placeholder.com/80';
                 return (
                   <tr key={product.id}>
                     <td className="px-6 py-4 flex items-center gap-4">
-                      <img src={imageUrl} alt={product.name} className="w-12 h-12 rounded object-cover" />
+                      <img src={imageUrl  } alt={product.name} className="w-12 h-12 rounded object-cover" />
                       <div>
                         <p className="font-medium text-gray-900">{product.name}</p>
                       </div>
                     </td>
                     <td className="px-6 py-4 text-gray-700">{product.category?.name || '—'}</td>
                     <td className="px-6 py-4 text-gray-700">${product.price}</td>
-                    <td className="px-6 py-4 text-gray-700">{product.vendors?.[0]?.first_name || '—'}</td>
+                    <td className="px-6 py-4">
+  {product.isApproved ? (
+    <span className="inline-block px-3 py-1 text-sm font-semibold rounded-full bg-green-100 text-green-800">
+      Approved
+    </span>
+  ) : (
+    <span className="inline-block px-3 py-1 text-sm font-semibold rounded-full bg-red-100 text-red-800">
+      Not Approved
+    </span>
+  )}
+</td>
+                    <td className="px-6 py-4 text-gray-700">{product.vendor?.businessName || '—'}</td>
+                    
                     <td className="px-6 py-4 text-center">
                       <div className="flex justify-center space-x-2">
                         <Link to={`/vendor/products/edit/${product.slug}`}>

@@ -103,16 +103,29 @@ const ProductPage = () => {
   const [quantity, setQuantity] = useState(1);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [relatedProduct, setRelatedProduct] = useState([])
+  
+const [reviewComment, setReviewComment] = useState("");
+const [reviewRating, setReviewRating] = useState(0);
+
+// Optional: For storing reviews locally (in real app, you'd send to backend)
+const [reviews, setReviews] = useState([]);
+
 
   useEffect(() => {
     const fetchProductBySlug = async () => {
       try {
         const res = await getData(`products?filters[slug][$eq]=${slug}&populate=*`);
+        const catRes = await getData(`products`);
+        const resviewa = await getData('reviews?filters[]')
         const fetchedProduct = res?.data;
+        const products = catRes?.data;
         const transformed = transformProductData(fetchedProduct);
+        const transformedRes = transformProductData(products);
         console.log(transformed)
         setProduct(transformed);
-
+        setRelatedProduct(transformedRes);
+        setReviews(transformed?.[0]?.reviews)
         // if (fetchedProduct?.attributes?.colors?.length > 0) {
         //   setSelectedColor(fetchedProduct.attributes.colors[0]);
         // }
@@ -215,7 +228,7 @@ const ProductPage = () => {
                     ))}
                   </div>
                   <span className="ml-2 text-sm text-gray-600">
-                    {product?.[0]?.rating} ({product?.[0]?.reviews} reviews)
+                    {product?.[0]?.rating} ({product?.[0]?.reviews.rating} reviews)
                   </span>
                 </div>
                 
@@ -247,7 +260,7 @@ const ProductPage = () => {
       href={`/vendors/${product?.[0]?.vendor?.id}`}
       className="text-xs text-purple-600 hover:underline"
     >
-      View Vendor &rarr;
+      
     </a>
   </div>
 </div>
@@ -258,25 +271,32 @@ const ProductPage = () => {
               <div>
                 <div className="flex items-baseline">
                   <span className="text-3xl font-bold text-gray-900">
-                    ${product?.[0]?.price}
+                    ₹{product?.[0]?.price}
                   </span>
                   {product?.[0]?.old_price && (
                     <span className="ml-3 text-lg text-gray-500 line-through">
-                      ${product?.[0]?.old_price}
+                      ₹{product?.[0]?.old_price}
                     </span>
                   )}
                 </div>
                 
-                <p className="text-sm text-green-600 flex items-center mt-2">
-                  <Truck className="h-4 w-4 mr-1" />
-                  {product?.[0]?.availability} - Free shipping
-                </p>
+               <span
+  className={`inline-flex items-center px-2 py-1 text-sm font-medium rounded-full ${
+    product?.[0]?.availability
+      ? "bg-green-100 text-green-700"
+      : "bg-red-100 text-red-700"
+  }`}
+>
+  <Truck className="h-4 w-4 mr-1" />
+  {product?.[0]?.availability ? "Available" : "Currently Unavailable"}
+</span>
+
               </div>
               
               <Separator />
               
               {/* Color Selection */}
-              {product?.[0]?.other?.color &&(
+              {product?.[0]?.other?.color.length !== 0 ? (
               <div>
                 <h3 className="text-sm font-medium text-gray-900 mb-3">Color</h3>
                 <div className="flex gap-3">
@@ -295,10 +315,10 @@ const ProductPage = () => {
                   ))}
                 </div>
               </div>
-              )}
-              {product?.[0]?.other?.size && (
+              ) : ""}
+              {product?.[0]?.other?.size.length !== 0 ? (
                <div>
-                <h3 className="text-sm font-medium text-gray-900 mb-3">Color</h3>
+                <h3 className="text-sm font-medium text-gray-900 mb-3">Size</h3>
                 <div className="flex gap-3">
                   {product?.[0]?.other?.size?.map((color) => (
                     <button
@@ -315,7 +335,7 @@ const ProductPage = () => {
                   ))}
                 </div>
               </div>
-              )}
+              ) :""}
               {/* Quantity Selection */}
               <div>
                 <h3 className="text-sm font-medium text-gray-900 mb-3">Quantity</h3>
@@ -343,6 +363,7 @@ const ProductPage = () => {
                 <Button 
                   className="bg-gradient-to-r from-purple-600 to-blue-600 flex items-center gap-2 text-white"
                   onClick={handleAddToCart}
+                  disabled={!product?.[0]?.availability}
                 >
                   <ShoppingCart className="h-4 w-4" />
                   Add to Cart
@@ -372,13 +393,6 @@ const ProductPage = () => {
                 <Card className="mb-6">
             <CardContent className="p-4 space-y-3">
               <div className="flex items-start">
-                <Truck size={18} className="mr-2 text-indigo-600 flex-shrink-0 mt-0.5" />
-                <div>
-                  <h3 className="font-semibold text-sm">Free Shipping</h3>
-                  <p className="text-xs text-slate-500">On orders over $50</p>
-                </div>
-              </div>
-              <div className="flex items-start">
                 <RotateCcw size={18} className="mr-2 text-indigo-600 flex-shrink-0 mt-0.5" />
                 <div>
                   <h3 className="font-semibold text-sm">30-Day Returns</h3>
@@ -399,15 +413,7 @@ const ProductPage = () => {
           <div className="flex items-center">
             <span className="text-sm font-medium mr-3">Share:</span>
             <div className="flex space-x-2">
-              <Button variant="outline" size="icon" className="w-8 h-8 p-0">
-                <Facebook size={16} />
-              </Button>
-              <Button variant="outline" size="icon" className="w-8 h-8 p-0">
-                <Twitter size={16} />
-              </Button>
-              <Button variant="outline" size="icon" className="w-8 h-8 p-0">
-                <Instagram size={16} />
-              </Button>
+              
               <Button variant="outline" size="icon" className="w-8 h-8 p-0">
                 <Share2 size={16} />
               </Button>
@@ -429,18 +435,12 @@ const ProductPage = () => {
             <TabsList className="mb-6 w-full justify-start border-b overflow-x-auto flex-nowrap">
               <TabsTrigger value="description">Description</TabsTrigger>
               <TabsTrigger value="specifications">Specifications</TabsTrigger>
-              <TabsTrigger value="reviews">Reviews ({product?.[0]?.reviews})</TabsTrigger>
+              <TabsTrigger value="reviews">Reviews ({product?.[0]?.reviews.length})</TabsTrigger>
             </TabsList>
             
             <TabsContent value="description" className="space-y-6">
               <div>
                 <p className="text-gray-700">{product?.[0]?.description}</p>
-              </div>
-              
-              <div>
-                <h3 className="text-lg font-medium mb-3">Key Features</h3>
-                
-                  
               </div>
             </TabsContent>
             
@@ -456,37 +456,123 @@ const ProductPage = () => {
               </div>
             </TabsContent>
             
-            <TabsContent value="reviews" className="space-y-6">
-              <div className="flex items-center">
-                <div className="flex items-baseline">
-                  <span className="text-5xl font-bold text-gray-900">{product?.[0]?.rating}</span>
-                  <span className="text-lg text-gray-500 ml-2">out of 5</span>
-                </div>
-                <div className="ml-6">
-                  <div className="flex items-center">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} 
-                        className={`h-5 w-5 ${
-                          i < Math.floor(product?.[0]?.rating) 
-                            ? 'text-yellow-400 fill-yellow-400' 
-                            : 'text-gray-300'
-                        }`} 
-                      />
-                    ))}
-                  </div>
-                  <p className="text-gray-500 mt-1">Based on {product?.[0]?.reviews} reviews</p>
-                </div>
-                <div className="ml-auto">
-                  <Button>Write a Review</Button>
-                </div>
-              </div>
-              
-              <Separator />
-              
-              <div className="space-y-6">
-                <p className="text-gray-500 italic text-center">This is where reviews would appear. In a real implementation, this would display actual user reviews from a database.</p>
-              </div>
-            </TabsContent>
+           <TabsContent value="reviews" className="space-y-6">
+  <div className="flex items-center">
+    <div className="flex items-baseline">
+      <span className="text-5xl font-bold text-gray-900">{product?.[0]?.rating || 0}</span>
+      <span className="text-lg text-gray-500 ml-2">out of 5</span>
+    </div>
+    <div className="ml-6">
+      <div className="flex items-center">
+        {[...Array(5)].map((_, i) => (
+          <Star key={i}
+            className={`h-5 w-5 ${
+              i < Math.floor(product?.[0]?.rating || 0)
+                ? 'text-yellow-400 fill-yellow-400'
+                : 'text-gray-300'
+            }`} 
+          />
+        ))}
+      </div>
+      <p className="text-gray-500 mt-1">Based on {reviews?.length || 0} reviews</p>
+    </div>
+  </div>
+
+  <Separator />
+
+  {/* Review List */}
+  <div className="space-y-4">
+    {reviews?.length ? (
+      reviews?.map((review, idx) => (
+        <div key={idx} className="border rounded-lg p-4">
+          <div className="flex items-center mb-1">
+            {[...Array(5)].map((_, i) => (
+              <Star key={i}
+                className={`h-4 w-4 ${
+                  i < review?.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'
+                }`}
+              />
+            ))}
+          </div>
+          <p className="text-gray-800 text-sm">{review?.review}</p>
+        </div>
+      ))
+    ) : (
+      <p className="text-gray-500 italic text-center">No reviews yet.</p>
+    )}
+  </div>
+
+  <Separator />
+
+  {/* Review Form */}
+  <div className="space-y-4">
+    <h4 className="text-lg font-medium">Write a Review</h4>
+    <form
+      onSubmit={async (e) => {
+  e.preventDefault();
+
+  const newReview = {
+    data: {
+      product: product?.[0]?.sku,
+      review: reviewComment,
+      rating: reviewRating,
+    },
+  };
+
+  try {
+    const response = await fetch("https://rushsphere.onrender.com/api/reviews", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newReview),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to submit review");
+    }
+
+    const result = await response.json();
+    console.log(result)
+    // Optional: Update local reviews list
+    setReviews((prev) => [...prev, result.data]);
+
+    setReviewComment("");
+    setReviewRating(0);
+  } catch (error) {
+    console.error("Error submitting review:", error);
+    // Optionally show error message to user
+  }
+}}
+      className="space-y-3"
+    >
+      <textarea
+        placeholder="Your Review"
+        value={reviewComment}
+        onChange={(e) => setReviewComment(e.target.value)}
+        className="w-full border px-3 py-2 rounded"
+        rows="3"
+        required
+      />
+      <div className="flex items-center gap-1">
+        {[...Array(5)].map((_, i) => (
+          <Star
+            key={i}
+            className={`h-5 w-5 cursor-pointer ${
+              i < reviewRating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"
+            }`}
+            onClick={() => setReviewRating(i + 1)}
+          />
+        ))}
+        <span className="ml-2 text-sm">{reviewRating} / 5</span>
+      </div>
+      <Button type="submit">Submit Review</Button>
+    </form>
+  </div>
+</TabsContent>
+
+
+
           </Tabs>
         </div>
         
@@ -494,7 +580,7 @@ const ProductPage = () => {
         <div className="mb-8">
           <h2 className="text-2xl font-bold mb-6">You might also like</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {relatedProducts.map(product => (
+            {relatedProduct.map(product => (
               <ProductCard key={product.id} {...product} />
             ))}
           </div>

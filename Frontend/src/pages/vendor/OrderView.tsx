@@ -1,59 +1,118 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Truck, SendHorizonal, Loader2 } from 'lucide-react';
+import axios from 'axios';
 
-const mockOrder = {
-  id: 'ORD12345',
-  customer: 'John Doe',
-  date: '2025-05-24',
-  items: [
-    { name: 'T-shirt', qty: 2, price: '$25.00' },
-    { name: 'Shoes', qty: 1, price: '$100.00' },
-  ],
-  total: '$150.00',
-  status: 'Processing',
-};
-
-const OrderView = () => {
+const AdminSingleOrderView = () => {
   const { orderId } = useParams();
+  const [order, setOrder] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+
+  const fetchOrder = async () => {
+    try {
+      const res = await axios.get(`https://rushsphere.onrender.com/api/vendor-orders/${orderId}`);
+      setOrder(res.data?.data); // fallback for demo
+      console.log(res.data?.data)
+    } catch (err) {
+      console.error('Failed to load order:', err);
+      setOrder(sampleOrder); // fallback for demo
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchOrder();
+  }, [orderId]);
+
+  const handleRocketShip = async () => {
+    try {
+      // Replace this with your RocketShipping API call
+      await axios.post('https://api.rocketshipping.com/ship', {
+        orderId: order.id,
+        provider: 'RocketShipping',
+        address: order.shipping_address,
+        items: order.products.map(p => ({ name: p.name, price: p.price })),
+      });
+      
+
+      alert(`Order #${order.id} has been sent to RocketShipping.`);
+    } catch (err) {
+      console.error('RocketShipping failed:', err);
+      alert('RocketShipping request failed.');
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[40vh]">
+        <Loader2 className="animate-spin h-6 w-6 text-gray-500" />
+      </div>
+    );
+  }
 
   return (
-    <div>
-      <h1 className="text-xl font-bold text-gray-800 mb-4">Order #{orderId}</h1>
+    <div className="p-6 max-w-4xl mx-auto bg-white rounded-xl shadow-sm">
+      <h1 className="text-2xl font-bold mb-4 text-gray-900">Order #{order?.other.orderNo}</h1>
 
-      <div className="bg-white p-6 rounded shadow mb-6">
-        <h2 className="text-lg font-semibold mb-2">Customer Details</h2>
-        <p><strong>Name:</strong> {mockOrder.customer}</p>
-        <p><strong>Date:</strong> {mockOrder.date}</p>
+      {/* Shipping Address */}
+      <div className="mb-6">
+        <h2 className="text-lg font-semibold text-gray-800 mb-2">Shipping Address</h2>
+        <p>{order?.[0]?.address?.street}</p>
+        <p>{order?.[0]?.address?.city}, {order?.[0]?.address?.state} {order?.[0]?.address?.zip}</p>
+        <p>{order?.[0]?.address?.country}</p>
       </div>
 
-      <div className="bg-white p-6 rounded shadow mb-6">
-        <h2 className="text-lg font-semibold mb-2">Order Items</h2>
-        <ul className="space-y-2">
-          {mockOrder.items.map((item, idx) => (
-            <li key={idx} className="flex justify-between text-sm text-gray-700">
-              <span>{item.name} x {item.qty}</span>
-              <span>{item.price}</span>
-            </li>
-          ))}
-        </ul>
-        <div className="text-right mt-4 font-semibold">Total: {mockOrder.total}</div>
+      {/* Products */}
+      <div className="mb-6">
+  <h2 className="text-lg font-semibold text-gray-800 mb-4">Products</h2>
+  <ul className="space-y-4">
+    {order?.products?.map((product, index) => (
+      <li
+        key={product?.id || index}
+        className="border rounded px-4 py-3 bg-gray-50 flex justify-between items-center"
+      >
+        <div>
+          <div className="font-medium text-gray-900">
+            {product?.name || 'Unnamed Product'}
+          </div>
+          <div className="text-sm text-gray-600">
+            ${product?.price || '0.00'}
+          </div>
+          <div className="text-sm text-gray-600">
+            {order?.other?.details?.map((i,index)=>{
+              <div>
+                <b>{i.name}</b>:{i.other[0]}
+              </div>
+            })}
+          </div>
+        </div>
+      </li>
+    ))}
+  </ul>
+</div>
+
+
+      {/* Summary */}
+      <div className="mb-6">
+        <h2 className="text-lg font-semibold text-gray-800 mb-2">Order Summary</h2>
+        <p><strong>Status:</strong> {order?.other?.status}</p>
+        <p><strong>Total:</strong> ${order?.other?.total}</p>
+        <p><strong>Shipping Provider:</strong> {order.shipping_provider || 'Not assigned yet'}</p>
       </div>
 
-      <div className="bg-white p-6 rounded shadow">
-        <h2 className="text-lg font-semibold mb-2">Update Status</h2>
-        <select className="border rounded px-4 py-2">
-          <option>Processing</option>
-          <option>Shipped</option>
-          <option>Delivered</option>
-          <option>Cancelled</option>
-        </select>
-        <button className="ml-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-          Update
-        </button>
+      {/* RocketShipping Button */}
+      <div className="text-right">
+        <Button variant="default" size="lg" onClick={handleRocketShip}>
+          <Truck className="h-5 w-5 mr-2" />
+          Ship Order with RocketShipping
+        </Button>
       </div>
     </div>
   );
 };
 
-export default OrderView;
+export default AdminSingleOrderView;
 

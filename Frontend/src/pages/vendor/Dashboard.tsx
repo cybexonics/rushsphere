@@ -19,7 +19,7 @@ const [information,setInformation] = useState({
      async function fetchData() {
       try {
         const [productRes, vendorOrders, categoriesRes, subcategoriesRes] = await Promise.all([
-          getData(`products?filters[vendor][$eq]=${storedVendorId}`),
+          getData(`products`),
           getData('vendor-orders'),
           getData('categories'),
           getData('subcategories?populate=*'),
@@ -31,9 +31,9 @@ const [information,setInformation] = useState({
         setInformation(prev => ({
           ...prev,
           orders:order.length,
-          products:transformed
+          products:transformed.length
         }))
-        console.log(transformed)
+        console.log(order)
         setOrders(order)
         }catch(error){
           console.log(error)
@@ -42,10 +42,10 @@ const [information,setInformation] = useState({
     fetchData();
   },[])
   const stats = [
-    { label: 'Total Products', value: '0', icon: Package, color: 'blue' },
-    { label: 'Total Sales', value: '0', icon: DollarSign, color: 'green' },
-    { label: 'Orders This Month', value: '156', icon: TrendingUp, color: 'purple' },
-    { label: 'Store Views', value: '2,340', icon: Eye, color: 'orange' }
+    { label: 'Total Products', value:  information.products, icon: Package, color: 'blue' },
+    { label: 'Total Sales', value:orders.length, icon: DollarSign, color: 'green' },
+    { label: 'Orders This Month', value: orders.length, icon: TrendingUp, color: 'purple' },
+    { label: 'Store Views', value: orders.length, icon: Eye, color: 'orange' }
   ];
 
   const getStatusColor = (status: string) => {
@@ -112,17 +112,17 @@ const [information,setInformation] = useState({
                       <div className="flex-1">
                         <div className="flex items-center space-x-4">
                           <div>
-                            <p className="font-medium text-gray-900">{order?.id}</p>
+                            <p className="font-medium text-gray-900">{order?.other?.orderNo}</p>
                             
                           </div>
                           <div className="flex-1">
-                            <p className="text-sm font-medium text-gray-900">{order?.products}</p>
-                            <p className="text-sm text-gray-600">{order?.amount}</p>
+                            <p className="text-sm font-medium text-gray-900">{order?.products.name}</p>
+                            <p className="text-sm text-gray-600">{order?.other.other}</p>
                           </div>
                         </div>
                       </div>
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
-                        {order.status}
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(order?.other?.status || "Pendding")}`}>
+                        {order?.other?.status || "Padding"}
                       </span>
                     </div>
                   )) : <div className="text-center">No Order Found</div>}
@@ -148,30 +148,10 @@ const [information,setInformation] = useState({
                     View Orders
                   </Button>
                 </Link>
-                <Link to="/vendor/customers" className="block">
-                  <Button variant="outline" className="w-full justify-start">
-                    <Users className="h-4 w-4 mr-2" />
-                    Customer Management
-                  </Button>
-                </Link>
-                <Link to="/vendor/analytics" className="block">
-                  <Button variant="outline" className="w-full justify-start">
-                    <TrendingUp className="h-4 w-4 mr-2" />
-                    Analytics
-                  </Button>
-                </Link>
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl p-6 text-white">
-              <h3 className="text-lg font-bold mb-2">Boost Your Sales</h3>
-              <p className="text-green-100 mb-4 text-sm">
-                Learn how to optimize your product listings and increase visibility.
-              </p>
-              <Button variant="secondary" size="sm" className="bg-white text-green-600 hover:bg-green-50">
-                Learn More
-              </Button>
-            </div>
+            
           </div>
         </div>
       </div>
