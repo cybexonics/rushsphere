@@ -1,0 +1,30 @@
+{
+  "kind": "collectionType",
+  "collectionName": "otps",
+  "info": {
+    "singularName": "otp",
+    "pluralName": "otps",
+    "displayName": "customer-otp"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "otp": {
+      "type": "biginteger",
+      "required": true,
+      "unique": true
+    },
+    "email": {
+      "type": "string",
+      "required": true
+    },
+    "other": {
+      "type": "json"
+    },
+    "isUsed": {
+      "type": "boolean"
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "kind": "collectionType",
+  "collectionName": "vendor_otps",
+  "info": {
+    "singularName": "vendor-otp",
+    "pluralName": "vendor-otps",
+    "displayName": "vendor-otp"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "email": {
+      "type": "email",
+      "required": true
+    },
+    "otp": {
+      "type": "biginteger",
+      "required": true,
+      "unique": true
+    },
+    "other": {
+      "type": "json"
+    },
+    "isUsed": {
+      "type": "boolean"
+    }
+  }
+}

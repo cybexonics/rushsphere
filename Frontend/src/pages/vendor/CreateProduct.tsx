@@ -105,10 +105,10 @@ export default function ProductCreate() {
     for (let file of files) {
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("upload_preset", "company-test"); // your Cloudinary preset
+      formData.append("upload_preset", "website"); // your Cloudinary preset
 
       try {
-        const res = await fetch("https://api.cloudinary.com/v1_1/dd5rsnbgi/image/upload", {
+        const res = await fetch("https://api.cloudinary.com/v1_1/djztk7ohs/image/upload", {
           method: "POST",
           body: formData,
         });
