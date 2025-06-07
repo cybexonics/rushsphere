@@ -4,16 +4,18 @@ import { Pencil, Ban, Trash2, Plus, CheckCircle, XCircle, Loader2  } from 'lucid
 import { Button } from '@/components/ui/button';
 import { getData } from '@/lib/getData';
 import axios from 'axios';
+import { useAuth } from '@/context/AuthProvider'
 
 const VendorProductList = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(null); // stores id of the product being modified
+  const { vendor } = useAuth();
 
   const fetchProducts = async () => {
     try {
       const res = await getData('products?populate=*');
-      setProducts(res?.data || []);
+      setProducts(res?.data.filter(p=>p.vendor?.documentId === vendor.documentId));
     } catch (err) {
       console.error('Failed to load products:', err);
     } finally {
@@ -23,6 +25,7 @@ const VendorProductList = () => {
 
   useEffect(() => {
     fetchProducts();
+    console.log(vendor?.isApproved)
   }, []);
 
   const handleDelete = async (id) => {
@@ -64,12 +67,12 @@ const VendorProductList = () => {
           <h1 className="text-2xl font-bold text-gray-900">My Products</h1>
           <p className="text-sm text-gray-600">Manage and edit your products.</p>
         </div>
-        <Link to="/vendor/products/new">
-          <Button className="bg-green-600 hover:bg-green-700 text-white mt-4 sm:mt-0">
+        {vendor?.isApproved && (
+          <Link to="/vendor/products/new" className="bg-green-600 hover:bg-green-700 text-white mt-4 sm:mt-0 flex px-3 py-2 items-center rounded">
             <Plus className="h-4 w-4 mr-2" />
             Add New Product
-          </Button>
-        </Link>
+          </Link>
+          )}
       </div>
 
       <div className="overflow-x-auto bg-white rounded-xl shadow-sm border border-gray-100">
@@ -80,6 +83,7 @@ const VendorProductList = () => {
               <th className="px-6 py-3 font-medium text-gray-500">Category</th>
               <th className="px-6 py-3 font-medium text-gray-500">Price</th>
               <th className="px-6 py-3 font-medium text-gray-500">Create Date</th>
+              <th className="px-6 py-3 font-medium text-gray-500">Status</th>
               <th className="px-6 py-3 font-medium text-gray-500 text-center">Actions</th>
             </tr>
           </thead>
@@ -117,6 +121,17 @@ const VendorProductList = () => {
                     <td className="px-6 py-4 text-gray-700">
                         {product.updatedAt ? new Date(product.createdAt).toLocaleDateString() : '—'}
                     </td>
+                    <td className="px-6 py-4">
+  {product.isApproved ? (
+    <span className="inline-block px-3 py-1 text-sm font-semibold rounded-full bg-green-100 text-green-800">
+      Approved
+    </span>
+  ) : (
+    <span className="inline-block px-3 py-1 text-sm font-semibold rounded-full bg-red-100 text-red-800">
+      Not Approved
+    </span>
+  )}
+</td>
                     <td className="px-6 py-4 text-center">
                       <div className="flex justify-center space-x-2">
                         <Link to={`/vendor/products/edit/${product.slug}`}>

@@ -54,8 +54,8 @@ const VendorProductList = () => {
               <th className="px-6 py-3 font-medium text-gray-500">Product</th>
               <th className="px-6 py-3 font-medium text-gray-500">Category</th>
               <th className="px-6 py-3 font-medium text-gray-500">Price</th>
-              <th className="px-6 py-3 font-medium text-gray-500">Vendor</th>
               <th className="px-6 py-3 font-medium text-gray-500">Status</th>
+              <th className="px-6 py-3 font-medium text-gray-500">Vendor</th>
               <th className="px-6 py-3 font-medium text-gray-500 text-center">Actions</th>
             </tr>
           </thead>
@@ -80,7 +80,7 @@ const VendorProductList = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 text-gray-700">{product.category?.name || '—'}</td>
-                    <td className="px-6 py-4 text-gray-700">${product.price}</td>
+                    <td className="px-6 py-4 text-gray-700">₹{product.price}</td>
                     <td className="px-6 py-4">
   {product.isApproved ? (
     <span className="inline-block px-3 py-1 text-sm font-semibold rounded-full bg-green-100 text-green-800">

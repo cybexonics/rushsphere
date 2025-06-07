@@ -24,6 +24,9 @@
       "relation": "manyToOne",
       "target": "api::product.product",
       "inversedBy": "reviews"
+    },
+    "other": {
+      "type": "json"
     }
   }
 }

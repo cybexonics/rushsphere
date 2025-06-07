@@ -1,11 +1,10 @@
 // src/utils/transformProductData.js
 
 export function transformProductData(rawData) {
-console.log(rawData)
   return rawData.map((item) => {
     return {
+    ...item,
       product_id: String(item.id),
-      isApproved:item.isApproved,
       name: item.name || '',
       slug:item.slug,
       description: item.description[0].trim(),

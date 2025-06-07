@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Plus, Package, TrendingUp, Users, DollarSign, Eye } from 'lucide-react';
 import { getData } from "@/lib/getData"
 import { transformProductData } from "@/lib/transformProductData"
+import { useAuth } from '@/context/AuthProvider'
 
 const VendorDashboard = () => {
 const [orders,setOrders] = useState([])
@@ -14,6 +15,8 @@ const [information,setInformation] = useState({
   orders:0,
   view:0,
 })
+
+const { vendor } = useAuth();
   useEffect(()=>{
   const storedVendorId = localStorage.getItem('vendor');
      async function fetchData() {
@@ -31,7 +34,7 @@ const [information,setInformation] = useState({
         setInformation(prev => ({
           ...prev,
           orders:order.length,
-          products:transformed.length
+          products:transformed.filter(p=>p.vendor?.documentId === vendor.documentId).length
         }))
         console.log(order)
         setOrders(order)

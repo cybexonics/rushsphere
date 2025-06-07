@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, XCircle } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const AdminProductApproval = () => {
   const [pendingProducts, setPendingProducts] = useState<any[]>([]);
@@ -10,10 +11,10 @@ const AdminProductApproval = () => {
   const fetchPendingProducts = async () => {
     try {
       setLoading(true);
-      const res = await fetch('https://rushsphere.onrender.com/api/products?filters[isApproved][$eq]=false&populate=vendor');
+      const res = await fetch('https://rushsphere.onrender.com/api/products?filters[isApproved][$eq]=false,null&populate=*');
       const data = await res.json();
       setPendingProducts(data.data); // Strapi v4 returns data inside `data`
-      console.log(data.data)
+      console.log(data.data[2])
     } catch (error) {
       console.error('Failed to fetch products', error);
     } finally {
@@ -62,15 +63,25 @@ const AdminProductApproval = () => {
               key={product.id}
               className="bg-white shadow rounded-lg p-4 flex justify-between items-center border"
             >
-              <div>
+              <div className="flex gap-5">
+                <img src={product.images[0]} alt={product.name} className="w-16 h-16 object-cover rounded-md" />
+                <div>
                 <h4 className="text-lg font-semibold">{product?.name}</h4>
                 <p className="text-sm text-gray-600">
-                  Vendor: {product.vendor?.data?.name || 'Unknown'} | Category:{' '}
-                  {product.category}
+                  Vendor: {product.vendor?.businessName || 'Unknown'} | Category:{' '}
+                  {product.category.name}
                 </p>
-                <p className="text-sm text-gray-800">Price: ${product?.price}</p>
+                <p className="text-sm text-gray-800">Price: ₹{product?.price}</p>
+                </div>
               </div>
               <div className="flex space-x-3">
+                <Link to={`/product/${product.slug}`}>
+                   <Button
+                    className="bg-white border text-black hover:bg-white"
+                  >
+                    View
+                  </Button>
+                </Link>
                 <Button
                   onClick={() => approveProduct(product.documentId)}
                   className="bg-green-600 hover:bg-green-700 text-white"

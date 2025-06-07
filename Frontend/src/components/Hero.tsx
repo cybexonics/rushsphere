@@ -1,64 +1,90 @@
-
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+
+const banners = [
+  {
+    id: 1,
+    src: '/1.jpeg',
+    alt: 'Shop the latest gadgets',
+  },
+  {
+    id: 2,
+    src: '/2.jpeg',
+    alt: 'Discover fashion deals',
+  },
+  {
+    id: 3,
+    src: '/3.jpeg',
+    alt: 'Home essentials at your door',
+  },
+];
 
 const Hero = () => {
+  const [current, setCurrent] = useState(0);
+  const length = banners.length;
+
+  const nextSlide = () => {
+    setCurrent((prev) => (prev + 1) % length);
+  };
+
+  const prevSlide = () => {
+    setCurrent((prev) => (prev - 1 + length) % length);
+  };
+
+  useEffect(() => {
+    const interval = setInterval(nextSlide, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <section className="bg-gradient-to-r from-blue-600 to-purple-700 text-white py-20">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div>
-            <h1 className="text-5xl font-bold mb-6 leading-tight">
-              Welcome to <span className="text-yellow-300">RushSphere</span>
-            </h1>
-            <p className="text-xl mb-8 text-blue-100">
-              Discover millions of products from thousands of sellers worldwide. 
-              Shop with confidence and get the best deals every day.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Link 
-                to="/customer-register" 
-                className="bg-yellow-400 text-gray-900 px-8 py-3 rounded-lg font-semibold hover:bg-yellow-300 transition-colors text-center"
-              >
-                Start Shopping
-              </Link>
-              <Link 
-                to="/seller-register" 
-                className="border-2 border-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors text-center"
-              >
-                Become a Seller
-              </Link>
-            </div>
-          </div>
-          <div className="hidden lg:block">
-            <div className="relative">
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
-                <h3 className="text-2xl font-semibold mb-4">Why Choose RushSphere?</h3>
-                <ul className="space-y-3">
-                  <li className="flex items-center">
-                    <div className="w-2 h-2 bg-yellow-300 rounded-full mr-3"></div>
-                    Millions of products
-                  </li>
-                  <li className="flex items-center">
-                    <div className="w-2 h-2 bg-yellow-300 rounded-full mr-3"></div>
-                    Fast & secure delivery
-                  </li>
-                  <li className="flex items-center">
-                    <div className="w-2 h-2 bg-yellow-300 rounded-full mr-3"></div>
-                    24/7 customer support
-                  </li>
-                  <li className="flex items-center">
-                    <div className="w-2 h-2 bg-yellow-300 rounded-full mr-3"></div>
-                    Easy returns & refunds
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
+    <section className="relative w-full h-[450px] overflow-hidden bg-black">
+      {/* Slide Images */}
+      {banners.map((banner, index) => (
+        <img
+          key={banner.id}
+          src={banner.src}
+          alt={banner.alt}
+          className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${
+            index === current ? 'opacity-100 z-10' : 'opacity-0 z-0'
+          }`}
+        />
+      ))}
+
+      {/* Overlay Content */}
+      <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-start px-6 sm:px-16 z-20">
+       
+      </div>
+
+      {/* Prev / Next Buttons */}
+      <button
+        onClick={prevSlide}
+        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/30 hover:bg-white/50 text-white p-2 rounded-full z-30"
+      >
+        <ChevronLeft size={24} />
+      </button>
+      <button
+        onClick={nextSlide}
+        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/30 hover:bg-white/50 text-white p-2 rounded-full z-30"
+      >
+        <ChevronRight size={24} />
+      </button>
+
+      {/* Tracker Dots */}
+      <div className="absolute bottom-5 left-1/2 transform -translate-x-1/2 flex gap-2 z-30">
+        {banners.map((_, idx) => (
+          <div
+            key={idx}
+            className={`w-3 h-3 rounded-full cursor-pointer ${
+              idx === current ? 'bg-yellow-400' : 'bg-white/50'
+            }`}
+            onClick={() => setCurrent(idx)}
+          />
+        ))}
       </div>
     </section>
   );
 };
 
 export default Hero;
+

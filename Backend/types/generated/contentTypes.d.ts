@@ -548,6 +548,7 @@ export interface ApiReviewReview extends Struct.CollectionTypeSchema {
       'api::review.review'
     > &
       Schema.Attribute.Private;
+    other: Schema.Attribute.JSON;
     product: Schema.Attribute.Relation<'manyToOne', 'api::product.product'>;
     publishedAt: Schema.Attribute.DateTime;
     rating: Schema.Attribute.Integer & Schema.Attribute.Required;

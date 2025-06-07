@@ -26,8 +26,8 @@ const ProductCard = ({
       <Link to={`/product/${slug || id}`} className="block relative">
         <div className="overflow-hidden h-52 relative">
           <img 
-            src={images[0]}
-            alt={name}
+            src={images?.[0]}
+            alt={name || ""}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
 

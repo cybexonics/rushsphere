@@ -73,7 +73,7 @@ const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
   };
 
   const removeFromCart = async (productId: number) => {
-    const updatedCart = cart.filter((item) => item.product.id !== productId);
+    const updatedCart = cart.filter((item) => item.product.sku !== productId);
     saveCart(updatedCart);
   };
 
@@ -84,7 +84,7 @@ const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
   }
 
   const updatedCart = cart.map((item) =>
-    item.product.id === productId ? { ...item, quantity } : item
+    item.product.sku === productId ? { ...item, quantity } : item
   );
 
   saveCart(updatedCart);

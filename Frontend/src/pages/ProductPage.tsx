@@ -116,7 +116,7 @@ const [reviews, setReviews] = useState([]);
     const fetchProductBySlug = async () => {
       try {
         const res = await getData(`products?filters[slug][$eq]=${slug}&populate=*`);
-        const catRes = await getData(`products`);
+        const catRes = await getData(`products?populate=*`);
         const resviewa = await getData('reviews?filters[]')
         const fetchedProduct = res?.data;
         const products = catRes?.data;

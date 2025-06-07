@@ -44,7 +44,6 @@ const Cart = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
       
       <main className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-6">Your Shopping Cart</h1>
@@ -83,7 +82,7 @@ const Cart = () => {
                     <div className="col-span-12 md:col-span-6">
                       <div className="flex items-center space-x-4">
                         <img 
-                          src={item.product.image} 
+                          src={item.product.images[0]} 
                           alt={item.name} 
                           className="w-16 h-16 object-cover rounded-md"
                         />
@@ -103,7 +102,7 @@ const Cart = () => {
                    <div className="col-span-5 md:col-span-2 flex items-center justify-center">
   <div className="flex items-center border rounded-md">
     <button 
-      onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
+      onClick={() => updateQuantity(item.product.sku, item.quantity - 1)}
       className="px-3 py-1 hover:bg-gray-100 disabled:opacity-50"
       aria-label="Decrease quantity"
       disabled={item.quantity <= 1}
@@ -112,7 +111,7 @@ const Cart = () => {
     </button>
     <span className="px-3 py-1 border-x">{item.quantity}</span>
     <button 
-      onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
+      onClick={() => updateQuantity(item.product.sku, item.quantity + 1)}
       className="px-3 py-1 hover:bg-gray-100"
       aria-label="Increase quantity"
     >
@@ -127,7 +126,7 @@ const Cart = () => {
                         <div>
                           <span className="line-through text-gray-400 text-sm">₹{item.product.old_price}</span>
                           <span className="text-gray-800 font-medium ml-2">
-                            ${item.product.price}
+                            ₹{item.product.price}
                           </span>
                         </div>
                       ) : (
@@ -145,7 +144,7 @@ const Cart = () => {
                     {/* Remove button */}
                     <div className="col-span-1 text-right">
                       <button 
-                        onClick={() => removeItem(item.product.id)} 
+                        onClick={() => removeItem(item.product.sku)} 
                         className="text-gray-400 hover:text-red-500"
                         aria-label="Remove item"
                       >
