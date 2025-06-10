@@ -60,8 +60,8 @@ const Checkout = () => {
   };
 
   const subtotal = calculateSubtotal();
-  const shipping = 5.99;
-  const tax = subtotal * 0.10;
+  const shipping = 0;
+  const tax = subtotal * 0;
   const total = subtotal + shipping + tax;
 
   const handleInputChange = (field, value) => {
@@ -98,11 +98,12 @@ const Checkout = () => {
           shipping,
           tax,
           total,
-          notes: shippingInfo.notes
+          notes: shippingInfo.notes,
+          status:"pending"
         },
         payment:{
           paymentMethod,
-          status:"pendding"
+          status:"Pendding"
         }
       };
 
