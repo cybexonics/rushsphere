@@ -141,14 +141,14 @@ const [reviews, setReviews] = useState([]);
     addToCart(product[0],selectedColor)
     toast({
       title: "Added to cart",
-      description: `${quantity} × ${product.name} added to your cart.`,
+      description: `${quantity} × ${product?.[0]?.name} added to your cart.`,
     });
   };
   
   const handleAddToWishlist = () => {
     toast({
       title: "Added to wishlist",
-      description: `${product.name} added to your wishlist.`,
+      description: `${product?.[0]?.name} added to your wishlist.`,
     });
   };
 
@@ -296,7 +296,7 @@ const [reviews, setReviews] = useState([]);
               <Separator />
               
               {/* Color Selection */}
-              {product?.[0]?.other?.color.length !== 0 ? (
+              {product?.[0]?.other?.color  ? (
               <div>
                 <h3 className="text-sm font-medium text-gray-900 mb-3">Color</h3>
                 <div className="flex gap-3">
@@ -316,7 +316,7 @@ const [reviews, setReviews] = useState([]);
                 </div>
               </div>
               ) : ""}
-              {product?.[0]?.other?.size.length !== 0 ? (
+              {product?.[0]?.other?.size ? (
                <div>
                 <h3 className="text-sm font-medium text-gray-900 mb-3">Size</h3>
                 <div className="flex gap-3">
@@ -395,7 +395,7 @@ const [reviews, setReviews] = useState([]);
               <div className="flex items-start">
                 <RotateCcw size={18} className="mr-2 text-indigo-600 flex-shrink-0 mt-0.5" />
                 <div>
-                  <h3 className="font-semibold text-sm">30-Day Returns</h3>
+                  <h3 className="font-semibold text-sm">7-Day Returns</h3>
                   <p className="text-xs text-slate-500">Hassle-free returns</p>
                 </div>
               </div>
@@ -409,17 +409,36 @@ const [reviews, setReviews] = useState([]);
             </CardContent>
           </Card>
           
-          {/* Share */}
-          <div className="flex items-center">
-            <span className="text-sm font-medium mr-3">Share:</span>
-            <div className="flex space-x-2">
-              
-              <Button variant="outline" size="icon" className="w-8 h-8 p-0">
-                <Share2 size={16} />
-              </Button>
-            </div>
-          </div>
-
+         {/* Share */}
+<div className="flex items-center">
+  <span className="text-sm font-medium mr-3">Share:</span>
+  <div className="flex space-x-2">
+    <Button 
+      variant="outline" 
+      size="icon" 
+      className="w-8 h-8 p-0"
+      onClick={async () => {
+        try {
+          if (navigator.share) {
+            await navigator.share({
+              title: document.title,
+              text: 'Check out this page',
+              url: window.location.href
+            });
+          } else {
+            // Fallback for browsers that don't support the Share API
+            await navigator.clipboard.writeText(window.location.href);
+            alert('Link copied to clipboard!');
+          }
+        } catch (err) {
+          console.error('Error sharing:', err);
+        }
+      }}
+    >
+      <Share2 size={16} />
+    </Button>
+  </div>
+</div>
 
 
       

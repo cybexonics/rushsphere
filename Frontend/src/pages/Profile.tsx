@@ -65,9 +65,7 @@ const Profile = () => {
                         <TabsTrigger value="wishlist" className="w-full justify-start gap-2">
                           <Heart className="h-4 w-4" /> Wishlist
                         </TabsTrigger>
-                        <TabsTrigger value="payment" className="w-full justify-start gap-2">
-                          <CreditCard className="h-4 w-4" /> Payment Methods
-                        </TabsTrigger>
+                        
                         <TabsTrigger value="addresses" className="w-full justify-start gap-2">
                           <MapPin className="h-4 w-4" /> Addresses
                         </TabsTrigger>
@@ -143,24 +141,26 @@ const Profile = () => {
                 <Card>
                   <CardHeader><CardTitle>Order History</CardTitle></CardHeader>
                   <CardContent>
+                  {JSON.stringify(user.orders)}
+                  {/*
                     <div className="space-y-6">
                       {user.orders ? user.orders.map(order => (
                         <div key={order.id} className="border rounded-lg p-4">
                           <div className="flex flex-wrap justify-between items-center">
                             <div>
-                              <p className="font-medium">{order.id}</p>
-                              <p className="text-sm text-gray-500">Ordered on {order.date}</p>
+                              <p className="font-medium">{JSON.stringify(order)}</p>
+                              <p className="text-sm text-gray-500">Ordered on </p>
                             </div>
                             <div className="flex flex-col items-end">
                               <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
-                                order.status === 'Delivered' 
+                                order === 'Delivered' 
                                   ? 'bg-green-100 text-green-800' 
                                   : order.status === 'Shipped' 
                                   ? 'bg-blue-100 text-blue-800' 
                                   : 'bg-amber-100 text-amber-800'
                               }`}>
                                 {order.status}
-                              </span>
+                              </span>*
                               <span className="font-medium mt-1">${order.total.toFixed(2)}</span>
                             </div>
                           </div>
@@ -172,7 +172,7 @@ const Profile = () => {
                           </div>
                         </div>
                       )) : <p>No Orders</p>}
-                    </div>
+                    </div>*/}
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -203,25 +203,29 @@ const Profile = () => {
                 </Card>
               </TabsContent>
 
-              {/* Payment Methods */}
-              <TabsContent value="payment">
-                <Card>
-                  <CardHeader><CardTitle>Payment Methods</CardTitle></CardHeader>
-                  <CardContent>
-                    <p className="text-gray-500 mb-4">Manage your saved payment methods</p>
-                    <Button>Add New Payment Method</Button>
-                  </CardContent>
-                </Card>
-              </TabsContent>
+              
 
               {/* Addresses */}
               <TabsContent value="addresses">
                 <Card>
                   <CardHeader><CardTitle>Saved Addresses</CardTitle></CardHeader>
-                  <CardContent>
-                    <p className="text-gray-500 mb-4">Manage your shipping and billing addresses</p>
-                    <Button>Add New Address</Button>
-                  </CardContent>
+                 <CardContent>
+  <p className="text-gray-500 mb-4">Manage your shipping and billing addresses</p>
+  {user?.address?.map(a=>(
+    <div className="border rounded p-4 mb-4 flex justify-between">
+    <div>
+    <p>{a?.street}</p>
+    <p>{a?.city}, {a?.state} {a?.zip}</p>
+    <p>India</p>
+    </div>
+    {/*<div className="mt-2 flex gap-2">
+      <Button variant="destructive">Delete</Button>
+    </div>*/}
+  </div>
+  ))}
+  
+</CardContent>
+
                 </Card>
               </TabsContent>
 

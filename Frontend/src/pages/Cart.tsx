@@ -6,7 +6,6 @@ import Header from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/components/ui/use-toast';
-
 import { useCart } from "@/context/CartProvider"
 
 
@@ -38,8 +37,8 @@ const Cart = () => {
   };
 
   const subtotal = calculateSubtotal();
-  const shipping = 5.99;
-  const tax = subtotal * 0.10; // 10% tax
+  const shipping = 0;
+  const tax = subtotal * 0; // 10% tax
   const total = subtotal + shipping + tax;
 
   return (

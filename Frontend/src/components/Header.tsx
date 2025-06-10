@@ -87,10 +87,11 @@ const Header = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center">
+          <Link to="/" className="flex items-center flex-col">
             <span className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-sky-500 bg-clip-text text-transparent">
               RushSphere
             </span>
+            <span>Buy it & Feel it </span>
           </Link>
           
           {/* Desktop Search */}

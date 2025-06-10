@@ -15,7 +15,7 @@ const Index = () => {
  useEffect(()=>{
   const fetchData = async() =>{
     const res = await getData('products?populate=*')
-    const category = await getData("categories?populate=*")
+    const category = await getData("categories")
     const fetchedproducts = res?.data;
     const transformed = transformProductData(fetchedproducts);
     console.log(transformed)
@@ -25,29 +25,7 @@ const Index = () => {
   fetchData();
  },[])
 
-  // Banner items for the main shopping categories
-  const bannerItems = [
-    {
-      name: "Footwear",
-      image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=800&h=400&fit=crop&crop=center",
-      link: "/category/footwear"
-    },
-    {
-      name: "Men's Wear",
-      image: "https://images.unsplash.com/photo-1490114538077-0a7f8cb49891?w=800&h=400&fit=crop&crop=center",
-      link: "/category/mens-wear"
-    },
-    {
-      name: "Ladies' Wear",
-      image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800&h=400&fit=crop&crop=center",
-      link: "/category/ladies-wear"
-    },
-    {
-      name: "Watches",
-      image: "https://images.unsplash.com/photo-1524805444758-089113d48a6d?w=800&h=400&fit=crop&crop=center",
-      link: "/category/watches"
-    }
-  ];
+
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -60,12 +38,13 @@ const Index = () => {
           <h2 className="text-3xl font-bold text-center text-slate-800 mb-8">
             Popular Categories
           </h2>
+          
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {categories.map((category, index) => (
               <div key={index} className="group cursor-pointer">
                 <div className="relative overflow-hidden rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
                   <img 
-                    src={category.image[0]}
+                    src={category.image || "/placeholder.svg"}
                     alt={category.name}
                     className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                   />

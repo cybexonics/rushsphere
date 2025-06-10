@@ -50,7 +50,7 @@ const AuthProvider = ({ children }) => {
   const login = async (identifier, password) => {
     setLoading(true);
     try {
-      const res = await getData(`customers?filters[email][$eq]=${identifier}&filters[password][$eq]=${password}`);
+      const res = await getData(`customers?filters[email][$eq]=${identifier}&filters[password][$eq]=${password}&populate=*`);
       const data = res?.data[0];
 
       if (!data) throw new Error('Invalid credentials');
