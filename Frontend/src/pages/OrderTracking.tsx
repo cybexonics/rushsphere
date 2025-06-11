@@ -7,43 +7,6 @@ import { Separator } from '@/components/ui/separator';
 import { Check, Clock, Package, Truck, MapPin } from 'lucide-react';
 
 // Mock API fetch
-const mockFetchOrder = async (orderId: string) => {
-  await new Promise(res => setTimeout(res, 800));
-
-  if (orderId === 'ORD-12345') {
-    return {
-      id: 'ORD-12345',
-      date: '2025-05-10',
-      total: 129.99,
-      estimatedDelivery: '2025-05-15',
-      trackingNumber: 'TRK7890123456',
-      customer: {
-        name: 'John Doe',
-        address: '123 Main St, Apt 4B, New York, NY 10001'
-      },
-      items: [
-        {
-          id: '1',
-          name: 'Wireless Noise Cancelling Headphones',
-          price: 129.99,
-          quantity: 1,
-          image: '/placeholder.svg'
-        }
-      ],
-      trackingSteps: [
-        { status: 'Order Placed', date: '2025-05-10 09:30 AM', location: 'Online', completed: true },
-        { status: 'Order Processed', date: '2025-05-11 11:45 AM', location: 'Warehouse, CA', completed: true },
-        { status: 'Shipped', date: '2025-05-12 03:20 PM', location: 'Distribution Center, Chicago', completed: false },
-        { status: 'In Transit', date: '2025-05-13 10:15 AM', location: 'Sorting Facility, Columbus', completed: false },
-        { status: 'Out for Delivery', date: null, location: 'Local Carrier Facility, New York', completed: false },
-        { status: 'Delivered', date: null, location: 'New York, NY 10001', completed: false }
-      ]
-    };
-  }
-
-  return null;
-};
-
 const OrderTrackingPage = () => {
   const { orderId } = useParams();
   const [orderDetails, setOrderDetails] = useState<any>(null);
@@ -53,9 +16,11 @@ const OrderTrackingPage = () => {
   useEffect(() => {
     const fetchOrder = async () => {
       setLoading(true);
-      const data = await mockFetchOrder(orderId || '');
-      if (data) {
-        setOrderDetails(data);
+      const data = await fetch(`https://rushsphere.onrender.com/api/orders?filters[orderNo][$eq]=${orderId}`);
+      const json = await data.json();
+      console.log(json.data[0])
+      if (json.data) {
+        setOrderDetails(json.data[0]);
         setError('');
       } else {
         setError('Order not found.');
@@ -103,7 +68,7 @@ const OrderTrackingPage = () => {
             <Card className="mb-8">
               <CardHeader>
                 <div className="flex justify-between items-center">
-                  <CardTitle>Order {orderDetails.id}</CardTitle>
+                  <CardTitle>Order NO : #{orderDetails?.orderNo}</CardTitle>
                   <span className={`inline-flex px-3 py-1 rounded-full text-sm font-medium
                     ${orderStatus === 'Delivered'
                       ? 'bg-green-100 text-green-800'
@@ -116,19 +81,19 @@ const OrderTrackingPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <p className="text-sm text-gray-500">Date</p>
-                    <p>{orderDetails.date}</p>
+                    <p>{Date(orderDetails?.createdAt).toLocaleString()} </p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Tracking #</p>
-                    <p>{orderDetails.trackingNumber}</p>
+                    <p className="text-sm text-gray-500">Tracking ID</p>
+                    <p>{orderDetails?.trackingNumber || "Pending"}</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Delivery</p>
-                    <p>{orderDetails.estimatedDelivery}</p>
+                    <p>{orderDetails?.other?.delivery || "Pending"}</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Total</p>
-                    <p>₹{orderDetails.total.toFixed(2)}</p>
+                    <p>₹{orderDetails?.other?.total}</p>
                   </div>
                 </div>
 
@@ -136,39 +101,62 @@ const OrderTrackingPage = () => {
 
                 <div>
                   <p className="text-sm text-gray-500">Shipping To</p>
-                  <p>{orderDetails.customer.name}</p>
-                  <p>{orderDetails.customer.address}</p>
+                  <p>{orderDetails.name}</p>
+                   <p>{orderDetails.address?.street}</p>
+        <p>{orderDetails.address?.city}, {orderDetails.address?.state} {orderDetails.address?.zip}</p>
+        <p>{orderDetails.address?.country || "India"}</p>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Tracking Timeline */}
+            <Card>
+              <CardHeader><CardTitle>Order Summary</CardTitle></CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  {orderDetails.products.map(p=>(
+                    <div key={p.product.id} className="border rounded-lg overflow-hidden">
+                          <div className="h-40">
+                            <img src={p.product.images[0]} alt={p.product.name} className="h-full w-full object-cover" />
+                          </div>
+                          <div className="p-4">
+                            <h3 className="font-medium">{p.product.name}</h3>
+                            <p className="font-bold">₹{p.product.price}</p>
+                            <div>
+                              Quantity: {p.quantity}
+                            </div>
+                          </div>
+                        </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+            {/* Tracking Timeline 
             <Card>
               <CardHeader><CardTitle>Tracking Timeline</CardTitle></CardHeader>
               <CardContent>
                 <div className="relative">
-                  {orderDetails.trackingSteps.map((step: any, index: number) => (
+                  {orderDetails?.other?.tracking?.map((step: any, index: number) => (
                     <div key={index} className="mb-8 flex">
                       <div className="flex-shrink-0 relative">
-                        <div className={`h-10 w-10 rounded-full flex items-center justify-center
-                          ${step.completed ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'}`}>
-                          {step.completed ? <Check className="h-5 w-5" /> : renderTrackingIcon(step.status)}
+                        <div className={`h-10 w-10 rounded-full flex items-center justify-center ${step.completed ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'}`}>
+                          {step?.completed ? <Check className="h-5 w-5" /> : renderTrackingIcon(step?.status)}
                         </div>
-                        {index < orderDetails.trackingSteps.length - 1 && (
+                        {index < orderDetails?.other?.tracking?.length - 1 && (
                           <div className={`absolute top-10 left-1/2 w-0.5 h-12 -translate-x-1/2
-                            ${orderDetails.trackingSteps[index + 1].completed ? 'bg-green-400' : 'bg-gray-200'}`} />
+                              ${orderDetails.trackingSteps[index + 1].completed ? 'bg-green-400' : 'bg-gray-200'}`} >Test</div>
                         )}
                       </div>
                       <div className="ml-4 flex-1">
-                        <h3 className="font-medium">{step.status}</h3>
-                        <p className="text-sm text-gray-500">{step.location}</p>
-                        <p className="text-sm text-gray-400">{step.date || 'Pending'}</p>
+                        <h3 className="font-medium">{step?.status}</h3>
+                        <p className="text-sm text-gray-500">{step?.location}</p>
+                        <p className="text-sm text-gray-400">{step?.date || 'Pending'}</p>
                       </div>
                     </div>
                   ))}
                 </div>
               </CardContent>
             </Card>
+            */}
           </div>
         )}
       </main>

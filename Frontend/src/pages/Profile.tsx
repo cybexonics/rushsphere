@@ -29,6 +29,7 @@ const Profile = () => {
   }, [user]);
 
   if (!user) return null; 
+  console.log(user.orders[0])
 
   const handleLogout = () =>{
     logout();
@@ -47,7 +48,7 @@ const Profile = () => {
                   <div className="flex flex-col items-center">
                     <Avatar className="h-24 w-24 mb-4">
                       <AvatarImage src={user?.image} alt={user?.name} />
-                      <AvatarFallback>{user?.name}</AvatarFallback>
+                      <AvatarFallback>{user?.name[0]}</AvatarFallback>
                     </Avatar>
                     <h2 className="text-xl font-bold">{user?.name}</h2>
                     <p className="text-gray-500 mb-6">{user?.email}</p>
@@ -141,38 +142,37 @@ const Profile = () => {
                 <Card>
                   <CardHeader><CardTitle>Order History</CardTitle></CardHeader>
                   <CardContent>
-                  {JSON.stringify(user.orders)}
-                  {/*
+                  
                     <div className="space-y-6">
                       {user.orders ? user.orders.map(order => (
-                        <div key={order.id} className="border rounded-lg p-4">
+                        <div key={order?.id} className="border rounded-lg p-4">
                           <div className="flex flex-wrap justify-between items-center">
                             <div>
-                              <p className="font-medium">{JSON.stringify(order)}</p>
-                              <p className="text-sm text-gray-500">Ordered on </p>
+                              <p className="font-medium">#{order?.orderNo}</p>
+                              <p className="text-sm text-gray-500">Ordered on {Date(order?.createdAt).toLocaleString()} </p>
                             </div>
                             <div className="flex flex-col items-end">
                               <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
-                                order === 'Delivered' 
+                                order?.other?.status === 'Delivered' 
                                   ? 'bg-green-100 text-green-800' 
-                                  : order.status === 'Shipped' 
+                                  : order?.other?.status === 'Shipped' 
                                   ? 'bg-blue-100 text-blue-800' 
                                   : 'bg-amber-100 text-amber-800'
                               }`}>
-                                {order.status}
-                              </span>*
-                              <span className="font-medium mt-1">${order.total.toFixed(2)}</span>
+                                {order?.other?.status}
+                              </span>
+                              <span className="font-medium mt-1">₹{order?.other?.total.toFixed(2)}</span>
                             </div>
                           </div>
                           <div className="mt-4 flex justify-between">
                             <span className="text-sm text-gray-500">
-                              {order.items} {order.items === 1 ? 'item' : 'items'}
+                              {order?.products?.length} {order?.products?.length === 1 ? 'item' : 'items'}
                             </span>
-                            <Button variant="outline" size="sm" onClick={()=>navigate(`/orders/${order.id}`)}>View Details</Button>
+                            <Button variant="outline" size="sm" onClick={()=>navigate(`/orders/${order?.orderNo}`)}>View Details</Button>
                           </div>
                         </div>
                       )) : <p>No Orders</p>}
-                    </div>*/}
+                    </div>
                   </CardContent>
                 </Card>
               </TabsContent>

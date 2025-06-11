@@ -274,9 +274,11 @@ const Header = () => {
 
   return (
     <div key={idx} className="relative group">
-      <button className="text-slate-700 hover:text-indigo-600 font-medium py-2">
+      <Link to={`/category/${category.slug}`}>
+      <button className="text-slate-700 hover:text-indigo-600 font-medium py-2" >
         {category.name}
       </button>
+      </Link>
 
       {/* Dropdown menu only if subcategories exist */}
       {hasSubcategories && (
