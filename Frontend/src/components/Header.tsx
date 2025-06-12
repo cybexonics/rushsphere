@@ -21,6 +21,7 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [expandedCategory, setExpandedCategory] = useState<number | null>(null);
+  const [search, setSearch] = useState('');
   const [categories,setCategories] = useState([])
   const navigate = useNavigate();
   const { user,vendor } = useAuth()
@@ -72,8 +73,14 @@ const Header = () => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    // Search functionality will go here
+    if (search.trim()) { // Use the 'search' state variable
+      navigate(`/products?search=${encodeURIComponent(search.trim())}`);
+    } else {
+      navigate('/products'); // Navigate to base products page if search input is empty
+    }
+    setIsMenuOpen(false); // Close mobile menu after search (optional, but good UX)
   };
+
 
   // Define category menu structure
  
@@ -95,17 +102,19 @@ const Header = () => {
           </Link>
           
           {/* Desktop Search */}
-          <form 
+           <form
             onSubmit={handleSearch}
             className="hidden md:flex flex-1 max-w-xl mx-6"
           >
             <div className="relative w-full">
               <Input
                 type="text"
+                value={search} // Bind to the 'search' state
+                onChange={(e) => setSearch(e.target.value)} // Update the 'search' state
                 placeholder="Search for products..."
                 className="w-full pr-10 border-slate-300 focus:border-indigo-500 rounded-l-lg"
               />
-              <Button 
+              <Button
                 type="submit"
                 className="absolute right-0 top-0 h-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-l-none rounded-r-lg"
               >

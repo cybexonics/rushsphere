@@ -32,6 +32,7 @@ export default function ProductCreate() {
   const [newFeatureKey, setNewFeatureKey] = useState('');
   const [newFeatureValue, setNewFeatureValue] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [refund,setRefund] = useState('');
 
   // Fetch categories/subcategories/vendors once on mount
   useEffect(() => {
@@ -152,6 +153,7 @@ export default function ProductCreate() {
         other: {
           color: colorList,
           size: sizeList,
+          refund:refund,
         },
         vendor: vendor?.documentId,
         category: categoryId,
@@ -405,6 +407,17 @@ export default function ProductCreate() {
         />
         <label className="font-medium">Mark as New</label>
       </div>
+      <div>
+          <label className="block font-medium">How Many Days to refund? (Non Editable)</label>
+          <input
+            type="number"
+            name="refund"
+            value={refund}
+            onChange={(e)=>setRefund(e.target.value)}
+            className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm"
+            placeholder="How Many Days to refund?"
+          />
+        </div>
 
       <button
         type="submit"

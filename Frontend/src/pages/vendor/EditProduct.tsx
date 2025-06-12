@@ -25,6 +25,7 @@ export default function ProductAdminEdit() {
   const [featuresList, setFeaturesList] = useState([]);
   const [newFeatureKey, setNewFeatureKey] = useState('');
   const [newFeatureValue, setNewFeatureValue] = useState('');
+  const [refund,setRefund] = useState('');
 
   useEffect(() => {
     async function fetchData() {
@@ -60,6 +61,7 @@ export default function ProductAdminEdit() {
         setColorList(transformed?.other?.color || []);
         setSizeList(transformed?.other?.size || []);
         setImageUrls(transformed?.images || []);
+        setRefund(transformed?.other?.refund || 0);
 
         const feats = transformed?.features;
         if (feats && typeof feats === 'object' && !Array.isArray(feats)) {
@@ -174,6 +176,7 @@ useEffect(() => {
       ...form.other,
       color: colorList,
       size: sizeList,
+      refund:refund,
     };
 
     const featuresObj = {};
@@ -476,6 +479,17 @@ useEffect(() => {
       </button>
     </div>
   </div>
+   <div>
+          <label className="block font-medium">How Many Days to refund? (Non Editable)</label>
+          <input
+            type="number"
+            name="refund"
+            value={refund}
+            onChange={(e)=>setRefund(e.target.value)}
+            className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm"
+            placeholder="How Many Days to refund?"
+          />
+        </div>
 
   {/* Images URLs (readonly display only) */}
   <div>
