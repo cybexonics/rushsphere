@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import {
@@ -14,7 +14,7 @@ import {
 
 const AdminDashboard = () => {
   const stats = [
-    { label: 'All Products', value: '1,230', icon: Package, color: 'blue' },
+    { label: 'All Products', value: 0, icon: Package, color: 'blue' },
     { label: 'All Vendors', value: '120', icon: Users, color: 'green' },
     { label: 'Categories', value: '15', icon: Layers, color: 'purple' },
     { label: 'Subcategories', value: '45', icon: List, color: 'orange' }
@@ -24,6 +24,16 @@ const AdminDashboard = () => {
     { label: 'Pending Products', link: '/admin/products/pending', icon: Clock },
     { label: 'Pending Vendors', link: '/admin/vendors/pending', icon: Clock }
   ];
+
+  
+  useEffect(()=>{
+    const isAdmin =  localStorage.getItem('admin');
+    if(isAdmin){
+      navigate('/admin');
+    }else{
+      navigate('/admin/login')
+    }
+  },[])
 
   return (
     <div className="min-h-screen bg-gray-50">

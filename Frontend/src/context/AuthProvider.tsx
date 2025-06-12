@@ -130,7 +130,6 @@ const AuthProvider = ({ children }) => {
 
       const vendorId = json.data.id;
       const vendorData = await getData(`vendors/${vendorId}`);
-      console.log(vendorData,json)
       setVendor(vendorData);
       setIsVendor(true);
       localStorage.setItem('vendor', vendorId);

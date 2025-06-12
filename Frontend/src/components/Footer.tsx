@@ -32,10 +32,9 @@ const Footer = () => {
         <div>
           <h4 className="font-semibold text-white mb-4">For Sellers</h4>
           <div className="space-y-2 text-gray-300 text-sm">
-            <Link to="/seller-register" className="block hover:text-white">Become a Seller</Link>
-            <Link to="/seller-login" className="block hover:text-white">Seller Login</Link>
-            <Link to="/seller-guide" className="block hover:text-white">Seller Guide</Link>
-            <Link to="/seller-support" className="block hover:text-white">Seller Support</Link>
+            <Link to="/vendor-register" className="block hover:text-white">Become a Seller</Link>
+            <Link to="/vendor-login" className="block hover:text-white">Seller Login</Link>
+            <Link to="/contact" className="block hover:text-white">Seller Support</Link>
           </div>
         </div>
 

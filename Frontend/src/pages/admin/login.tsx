@@ -1,6 +1,6 @@
 
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,12 +11,20 @@ const AdminLogin = () => {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
+  useEffect(()=>{
+    const isAdmin =  localStorage.getItem('admin');
+    if(isAdmin){
+      navigate('/admin');
+    }
+  },[])
+
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Dummy authentication logic (replace with real API call)
     if (email === 'admin@example.com' && password === 'admin123') {
       navigate('/admin');
+      localStorage.setItem('admin', {
+        email === 'admin@rushsphere.com',
+      });
     } else {
       alert('Invalid credentials');
     }

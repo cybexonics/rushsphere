@@ -17,6 +17,7 @@ import Cart from "./pages/Cart";
 import Profile from "./pages/Profile";
 import OrderTracking from "./pages/OrderTracking";
 import About from "./pages/About"
+import Contact from "./pages/Contact"
 
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermPolicy from "./pages/TermPolicy";
@@ -66,6 +67,7 @@ const App = () => (
                 <Route path="/login" element={<CustomerLogin />} />
                 <Route path="/register" element={<CustomerRegister />} />
                 <Route path="/about" element={<About/>}/>
+                <Rouet path="/contact" element={<Contact/>}/>
                 <Route path="/vendor-login" element={<SellerLogin />} />
                 <Route path="/vendor-register" element={<SellerRegister />} />
                 <Route path="/cart" element={<Cart />} />
