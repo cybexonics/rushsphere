@@ -20,10 +20,10 @@ const AdminLogin = () => {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (email === 'admin@example.com' && password === 'admin123') {
+    if (email === 'admin@example.com' && password === 'Laxman@9380') {
       navigate('/admin');
       localStorage.setItem('admin', {
-        email === 'admin@rushsphere.com',
+        email:'admin@rushsphere.com',
       });
     } else {
       alert('Invalid credentials');

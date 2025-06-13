@@ -21,10 +21,10 @@ const Footer = () => {
         <div>
           <h4 className="font-semibold text-white mb-4">For Customers</h4>
           <div className="space-y-2 text-gray-300 text-sm">
-            <Link to="/customer-login" className="block hover:text-white">Login</Link>
-            <Link to="/customer-register" className="block hover:text-white">Sign Up</Link>
-            <Link to="/help" className="block hover:text-white">Help Center</Link>
-            <Link to="/returns" className="block hover:text-white">Returns</Link>
+            <Link to="/login" className="block hover:text-white">Login</Link>
+            <Link to="/register" className="block hover:text-white">Sign Up</Link>
+            <Link to="/contact" className="block hover:text-white">Help Center</Link>
+            <Link to="/refund-policy" className="block hover:text-white">Returns</Link>
           </div>
         </div>
 
@@ -54,12 +54,12 @@ const Footer = () => {
                 <MapPin size={16} className="mr-2 mt-1 text-blue-400" />
                 <span>
                   RushSphere,<br />
-                  Gadag, 582101
+                  Gadag,India 582101
                 </span>
               </p>
               <p className="flex items-center">
                 <Phone size={16} className="mr-2 text-blue-400" />
-                1-800-RUSH-SPH
+                +91 9380709411
               </p>
               <p className="flex items-center">
                 <Mail size={16} className="mr-2 text-blue-400" />
@@ -74,7 +74,7 @@ const Footer = () => {
         <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center text-sm text-gray-400">
           <p>© {new Date().getFullYear()} RushSphere. All rights reserved.</p>
           <p className="mt-2 md:mt-0">
-            Developed by <span className="text-blue-300 font-medium">YourTeamName</span>
+            Developed by <span className="text-blue-300 font-medium">Cybexonics IT Consultants Pvt.Ltd</span>
           </p>
         </div>
       </div>
