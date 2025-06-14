@@ -17,7 +17,7 @@ import { useToast } from '@/components/ui/use-toast'; // Import useToast
 import ProductCard from '@/components/ProductCard'; // Assuming you want to reuse ProductCard for wishlist items
 
 const Profile = () => {
-  const { user, logout, updateUser } = useAuth(); // Assuming updateUser exists in AuthProvider
+  const { user, logout,updateUser,restoreSession } = useAuth(); // Assuming updateUser exists in AuthProvider
   const { addToCart, removeFromWishlist } = useCart();
   const navigate = useNavigate();
   const { toast } = useToast(); // Initialize toast
@@ -38,7 +38,7 @@ const Profile = () => {
     if (!storedUserId) {
       navigate('/login');
     }
-    // Set initial form values when user data is available
+    restoreSession()
     if (user) {
       setUserName(user.name || '');
       setUserEmail(user.email || '');
@@ -58,88 +58,161 @@ const Profile = () => {
     });
   };
 
-  const handleUpdateAccount = async (e: React.FormEvent) => {
-    e.preventDefault();
-    // In a real app, you'd send this data to your backend API
-    // For now, we'll simulate an update
-    try {
-      // Simulate API call
-      // const response = await fetch('/api/update-user', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ name: userName, email: userEmail, phone: userPhone })
-      // });
-      // if (!response.ok) throw new Error('Failed to update account');
+const BASE_API_URL = 'https://rushsphere.onrender.com/api'; // Example base URL
 
-      // If you have an updateUser function in your AuthProvider:
-      if (updateUser) {
-        updateUser({ ...user, name: userName, email: userEmail, phone: userPhone });
-      }
+const handleUpdateAccount = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-      toast({
-        title: "Account Updated",
-        description: "Your account information has been updated.",
-      });
-    } catch (error) {
-      console.error("Error updating account:", error);
-      toast({
-        title: "Update Failed",
-        description: "There was an error updating your account.",
-        variant: "destructive"
-      });
+  try {
+    // Send data to your backend API using fetch
+    const response = await fetch(`${BASE_API_URL}/customers/${user.documentId}`, { // Adjust endpoint as needed
+      method: 'PUT', // or 'PATCH' depending on your API
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+      data:{
+        name: userName,
+        email: userEmail,
+        phone: userPhone,
+        }
+      }),
+    });
+
+    if (!response.ok) {
+      // Attempt to read error message from backend if available
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to update account');
     }
-  };
 
-  const handleChangePassword = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (newPassword !== confirmPassword) {
+    const updatedUserData = await response.json(); // Assuming backend returns updated user data
+
+    // If you have an updateUser function in your AuthProvider, update local state:
+    if (updateUser) {
+      // Use the data returned from the backend or the local state
+      updateUser({ ...user, name: userName, email: userEmail, phone: userPhone });
+      // Alternatively, if backend returns the full updated user object:
+      // updateUser(updatedUserData);
+    }
+
+    toast({
+      title: "Account Updated",
+      description: "Your account information has been updated.",
+    });
+  } catch (error: any) { // Explicitly type error as 'any' for simpler handling
+    console.error("Error updating account:", error);
+    toast({
+      title: "Update Failed",
+      description: error.message || "There was an error updating your account.",
+      variant: "destructive"
+    });
+  }
+};
+
+
+const handleChangePassword = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  if (newPassword !== confirmPassword) {
+    toast({
+      title: "Password Mismatch",
+      description: "New password and confirm password do not match.",
+      variant: "destructive"
+    });
+    return;
+  }
+
+  try {
+    // Send currentPassword and newPassword to your backend
+    const response = await fetch(`${BASE_API_URL}/customers/${user.documentId}`, { // Adjust endpoint as needed
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+      data:{
+        password: newPassword,
+        }
+      }),
+    });
+
+    if (!response.ok) {
+      // Attempt to read error message from backend if available
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to change password');
+    }
+
+    // Assuming a successful response from the backend
+    toast({
+      title: "Password Changed",
+      description: "Your password has been successfully updated.",
+    });
+
+    // Clear password fields after successful change
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+  } catch (error: any) { // Explicitly type error as 'any' for simpler handling
+    console.error("Error changing password:", error);
+    toast({
+      title: "Password Change Failed",
+      description: error.message || "There was an error changing your password. Please check your current password.",
+      variant: "destructive"
+    });
+  }
+};
+
+const handleRemoveAddress = async (indexToRemove: number) => {
+  try {
+    const updatedAddresses = addresses.filter((_, index) => index !== indexToRemove);
+    if (!user || !user.documentId) {
+      console.error("User ID not available to update address on server.");
       toast({
-        title: "Password Mismatch",
-        description: "New password and confirm password do not match.",
+        title: "Error",
+        description: "Could not identify user to remove address on server.",
         variant: "destructive"
       });
       return;
     }
-    // In a real app, you'd send currentPassword, newPassword to backend
-    try {
-      // Simulate API call
-      // const response = await fetch('/api/change-password', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ currentPassword, newPassword })
-      // });
-      // if (!response.ok) throw new Error('Failed to change password');
+    const response = await fetch(`${BASE_API_URL}/customers/${user.documentId}`, {
+      method: 'PUT', // or 'PATCH' depending on how your Strapi API is configured for updates
+      headers: {
+        'Content-Type': 'application/json',
+        
+      },
+      body: JSON.stringify({
+        data: {
+          address: updatedAddresses, 
+        },
+      }),
+    });
 
-      toast({
-        title: "Password Changed",
-        description: "Your password has been successfully updated.",
-      });
-      setCurrentPassword('');
-      setNewPassword('');
-      setConfirmPassword('');
-    } catch (error) {
-      console.error("Error changing password:", error);
-      toast({
-        title: "Password Change Failed",
-        description: "There was an error changing your password. Please check your current password.",
-        variant: "destructive"
-      });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error?.message || 'Failed to remove address from server.');
     }
-  };
 
-  const handleRemoveAddress = (indexToRemove: number) => {
-    // In a real app, you'd send this to your backend
-    const updatedAddresses = addresses.filter((_, index) => index !== indexToRemove);
+    // 3. Update local state only AFTER successful API call
     setAddresses(updatedAddresses);
-    // You would also call an API to update the user's addresses on the backend
+
     if (updateUser) {
       updateUser({ ...user, address: updatedAddresses });
     }
+
     toast({
       title: "Address Removed",
       description: "The address has been successfully removed.",
     });
-  };
+
+  } catch (error: any) {
+    console.error("Error removing address:", error);
+    toast({
+      title: "Removal Failed",
+      description: error.message || "There was an error removing the address. Please try again.",
+      variant: "destructive"
+    });
+  }
+};
 
   const handleRemoveFromWishlist = (productId: string) => {
     removeFromWishlist(productId);

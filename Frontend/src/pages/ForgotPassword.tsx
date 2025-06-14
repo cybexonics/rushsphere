@@ -36,13 +36,17 @@ const ForgotPasswordPage = () => {
         return;
       }
 
+      setMessage("Account Found OTP will be sending...")
+
       // 2. Save OTP to your backend (e.g., Strapi 'otps' collection)
       await axios.post(`https://rushsphere.onrender.com/api/otps`, {
-        data: { isUsed: false, otp: otpValue, email: email, createdAt: new Date().toISOString(), expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString() } // Add expiry
+        data: { isUsed: false, otp: otpValue, email: email,other:{ expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString()} } // Add expiry
       });
 
+      setMessage("Storing OTP in DB in 2 Min OTP will be sending...")
+
       // 3. Send OTP via email
-      await axios.post(`https://rushsphere.onrender.com/api/send-email`, {
+      await axios.post(`http://localhost:1337/api/send-email`, {
         to: email,
         subject: "Your Password Reset OTP",
         message: `Hi there, your One-Time Password (OTP) for password reset is: ${otpValue}. This code is valid for 10 minutes. Please don't share it with anyone.`
@@ -51,6 +55,7 @@ const ForgotPasswordPage = () => {
       setMessage('A 6-digit OTP has been sent to your email. Please check your inbox.');
       setStep(2); // Move to OTP verification step
     } catch (err: any) {
+    setMessage("ERROR to sending mail")
       console.error("OTP Request Error:", err);
       setError(err.response?.data?.error?.message || 'Failed to send OTP. Please try again.');
     } finally {
@@ -83,23 +88,38 @@ const ForgotPasswordPage = () => {
       // the backend would validate.
 
       // Example backend validation check (conceptual, replace with your actual API call)
-      const otpValidationResponse = await axios.get(`https://rushsphere.onrender.com/api/otps?filters[otp][$eq]=${otp}&filters[email][$eq]=${email}&filters[isUsed][$eq]=false`);
+      // First, fetch OTP data using only the OTP as a filter
+const otpValidationResponse = await axios.get(`https://rushsphere.onrender.com/api/otps?filters[otp][$eq]=${otp}`);
+console.log(`https://rushsphere.onrender.com/api/otps?filters[otp][$eq]=${otp}`,otpValidationResponse.data)
 
-      if (otpValidationResponse.data.data.length === 0 || new Date(otpValidationResponse.data.data[0].attributes.expiresAt) < new Date()) {
-        setError('Invalid or expired OTP. Please request a new one.');
-        setLoading(false);
-        return;
-      }
+// Check if any OTP records were found
+if (otpValidationResponse.data.data.length === 0) {
+  setError('Invalid OTP. Please request a new one.');
+  setLoading(false);
+  return;
+}
 
-      // Mark OTP as used on the backend (conceptual API call)
-      const otpRecordId = otpValidationResponse.data.data[0].id;
-      await axios.put(`https://rushsphere.onrender.com/api/otps/${otpRecordId}`, {
-        data: { isUsed: true }
-      });
+// Find the correct OTP record that matches email, isUsed, and expiration
+const foundOtpRecord = otpValidationResponse.data.data.find(record =>
+  record.email === email &&
+  record.isUsed === false &&
+  new Date(record.other.expiresAt) > new Date()
+);
 
+if (!foundOtpRecord) {
+  setError('Invalid or expired OTP. Please request a new one.');
+  setLoading(false);
+  return;
+}
 
-      setMessage('OTP verified successfully. You can now set your new password.');
-      setStep(3); // Move to set new password step
+// Mark OTP as used on the backend
+const otpRecordId = foundOtpRecord.documentId;
+await axios.put(`https://rushsphere.onrender.com/api/otps/${otpRecordId}`, {
+  data: { isUsed: true }
+});
+
+setMessage('OTP verified successfully. You can now set your new password.');
+setStep(3); // Move to set new password step
     } catch (err: any) {
       console.error("OTP Verification Error:", err);
       setError(err.response?.data?.error?.message || 'OTP verification failed. Please try again.');
@@ -156,12 +176,13 @@ const ForgotPasswordPage = () => {
 
       // First, get the customer's ID based on email
       const customerRes = await axios.get(`https://rushsphere.onrender.com/api/customers?filters[email][$eq]=${email}`);
+      console.log(`https://rushsphere.onrender.com/api/customers?filters[email][$eq]=${email}`,customerRes.data)
       if (customerRes.data.data.length === 0) {
         setError('Customer not found for password update.');
         setLoading(false);
         return;
       }
-      const customerId = customerRes.data.data[0].id;
+      const customerId = customerRes.data.data[0].documentId;
 
       // Then, update the customer's password
       // NOTE: This assumes your Strapi backend is configured to accept password updates

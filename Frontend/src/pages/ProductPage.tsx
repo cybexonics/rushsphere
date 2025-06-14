@@ -345,7 +345,11 @@ const ProductPage = () => {
               </Button>
 
               <div className="flex flex-wrap gap-3 text-sm text-gray-500">
-                <button className="flex items-center hover:text-purple-600">
+                <button className="flex items-center hover:text-purple-600" onClick={async()=>{
+                    const productLink = window.location.href;
+                     await navigator.clipboard.writeText(productLink);
+                     alert('Product link copied to clipboard!');
+                }}>
                   <Share2 className="h-4 w-4 mr-1" />
                   Share
                 </button>
