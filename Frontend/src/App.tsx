@@ -50,7 +50,7 @@ import AuthProvider from "./context/AuthProvider";
 import CartProvider from "./context/CartProvider";
 
 
-import ScrollToTop from "./lib/ScrollToTop"
+
 
 //VendorApprove
 
@@ -65,7 +65,7 @@ const App = () => (
             <Toaster />
             <Sonner />
             <Routes>
-            <ScrollToTop/>
+            
               <Route element={<Layout />}>
                 <Route path="/" element={<Index />} />
                 <Route path="/login" element={<CustomerLogin />} />
