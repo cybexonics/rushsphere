@@ -79,7 +79,7 @@ const SellerLogin = () => {
                 <input type="checkbox" className="mr-2" />
                 <span className="text-sm text-gray-600">Remember me</span>
               </label>
-              <Link to="/seller-forgot-password" className="text-sm text-green-600 hover:underline">
+              <Link to="/forgot-password-vendor" className="text-sm text-green-600 hover:underline">
                 Forgot Password?
               </Link>
             </div>

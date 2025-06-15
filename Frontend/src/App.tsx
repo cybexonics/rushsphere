@@ -26,7 +26,7 @@ import Products from "./pages/Products";
 import Checkout from "./pages/Checkout";
 import NotFound from "./pages/NotFound";
 import ForgotPassword from "./pages/ForgotPassword"
-import PasswordReset from "./pages/PasswordReset"
+import ForgotPasswordVendor from "./pages/ForgotPasswordVendor"
 
 import VendorProducts from "./pages/vendor/Products";
 import CreateProduct from "./pages/vendor/CreateProduct";
@@ -90,7 +90,8 @@ const App = () => (
                 <Route path="/product/:slug" element={<ProductPage />} />
                 <Route path="*" element={<NotFound />} />
                 <Route path="/forgot-password" element={<ForgotPassword/>}/>
-                <Route path="/password-reset" element={<PasswordReset/>}/>
+                <Route path="/forgot-password-vendor" element={<ForgotPasswordVendor/>}/>
+                
                 <Route path="/vendor" element={<VendorLayout />}>
                   <Route index path="/vendor" element={<VendorDashboard />} />
                   <Route path="/vendor/products" element={<VendorProducts />} />

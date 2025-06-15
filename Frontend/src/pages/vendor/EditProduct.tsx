@@ -431,7 +431,7 @@ useEffect(() => {
 
   {/* Features */}
   <div>
-    <label className="block font-semibold mb-1">Features</label>
+    <label className="block font-semibold mb-1">Specifications</label>
     {featuresList.length === 0 && (
       <p className="text-gray-500 italic">No features added yet.</p>
     )}

@@ -1,3 +1,6 @@
+
+
+
 import React, { useState } from 'react';
 import axios from 'axios';
 
@@ -29,7 +32,7 @@ const ForgotPasswordPage = () => {
 
     try {
       // 1. Check if customer exists (optional, but good for UX)
-      const customerResponse = await axios.get(`https://rushsphere.onrender.com/api/customers?filters[email][$eq]=${email}`);
+      const customerResponse = await axios.get(`https://rushsphere.onrender.com/api/vendors?filters[email][$eq]=${email}`);
       if (customerResponse.data.data.length === 0) {
         setError('No account found with that email address.');
         setLoading(false);
@@ -37,9 +40,10 @@ const ForgotPasswordPage = () => {
       }
 
       // 2. Save OTP to your backend (e.g., Strapi 'otps' collection)
-      await axios.post(`https://rushsphere.onrender.com/api/otps`, {
+      await axios.post(`https://rushsphere.onrender.com/api/vendor-otps`, {
         data: { isUsed: false, otp: otpValue, email: email,other:{ expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString()} } // Add expiry
       });
+
 
       // 3. Send OTP via email
       await axios.post(`https://rushsphere.onrender.com/api/send-email`, {
@@ -73,7 +77,18 @@ const ForgotPasswordPage = () => {
     }
 
     try {
-const otpValidationResponse = await axios.get(`https://rushsphere.onrender.com/api/otps?filters[otp][$eq]=${otp}`);
+      // In a real application, you'd make an API call to verify the OTP on the backend.
+      // This would involve checking against your 'otps' collection for:
+      // 1. Correct OTP
+      // 2. Correct email
+      // 3. Not expired
+      // 4. Not already used (isUsed: false)
+      // For this example, we're just comparing with `generatedOtp` state, but ideally,
+      // the backend would validate.
+
+      // Example backend validation check (conceptual, replace with your actual API call)
+      // First, fetch OTP data using only the OTP as a filter
+const otpValidationResponse = await axios.get(`https://rushsphere.onrender.com/api/vendor-otps?filters[otp][$eq]=${otp}`);
 
 // Check if any OTP records were found
 if (otpValidationResponse.data.data.length === 0) {
@@ -97,7 +112,7 @@ if (!foundOtpRecord) {
 
 // Mark OTP as used on the backend
 const otpRecordId = foundOtpRecord.documentId;
-await axios.put(`https://rushsphere.onrender.com/api/otps/${otpRecordId}`, {
+await axios.put(`https://rushsphere.onrender.com/api/vendor-otps/${otpRecordId}`, {
   data: { isUsed: true }
 });
 
@@ -130,17 +145,49 @@ setStep(3); // Move to set new password step
     }
 
     try {
-      const customerRes = await axios.get(`https://rushsphere.onrender.com/api/customers?filters[email][$eq]=${email}`);
-      console.log(`https://rushsphere.onrender.com/api/customers?filters[email][$eq]=${email}`,customerRes.data)
+      // In a real Strapi application, you would typically use the `/api/auth/reset-password` endpoint.
+      // This assumes you have the Strapi Users & Permissions plugin configured for password reset.
+      // The Strapi reset password flow usually involves a `resetPasswordToken` that's sent in the email link,
+      // not direct OTP verification like this.
+
+      // If your backend uses OTP for password reset, you'd need a custom endpoint.
+      // For demonstration, let's assume you have a custom endpoint or
+      // you need to update the customer's password directly after OTP verification.
+      // THIS IS A SIMPLIFIED EXAMPLE. A secure password reset flow for Strapi
+      // usually involves the `resetPasswordToken` mechanism.
+
+      // Option A: (More common Strapi setup) Use built-in Strapi reset-password endpoint
+      // This would typically involve sending `code` (the token from email), `password`, and `passwordConfirmation`
+      /*
+      await axios.post(`https://rushsphere.onrender.com/api/auth/reset-password`, {
+        code: YOUR_RESET_TOKEN_FROM_EMAIL, // This is the key difference! OTPs are not tokens.
+        password: newPassword,
+        passwordConfirmation: confirmPassword,
+      });
+      */
+
+      // Option B: (If your backend supports a custom OTP-based password change after verification)
+      // You'd need an API endpoint that updates the user's password given their email and verified OTP.
+      // For this example, let's simulate updating the customer's record.
+      // **WARNING**: Directly updating password this way is NOT standard or secure without proper backend validation
+      // and hashing. This is for illustrative purposes only if your backend supports such an endpoint.
+
+      // First, get the customer's ID based on email
+      const customerRes = await axios.get(`https://rushsphere.onrender.com/api/vendors?filters[email][$eq]=${email}`);
       if (customerRes.data.data.length === 0) {
-        setError('Customer not found for password update.');
+        setError('Vendor not found for password update.');
         setLoading(false);
         return;
       }
       const customerId = customerRes.data.data[0].documentId;
-      await axios.put(`https://rushsphere.onrender.com/api/customers/${customerId}`, {
+
+      // Then, update the customer's password
+      // NOTE: This assumes your Strapi backend is configured to accept password updates
+      // on the customer model directly, and handle hashing. A more robust Strapi setup
+      // uses the built-in authentication system.
+      await axios.put(`https://rushsphere.onrender.com/api/vendors/${customerId}`, {
         data: {
-          password: newPassword 
+          password: newPassword // This would only work if your customer model has a password field and Strapi hashes it on update
         }
       });
 
@@ -256,7 +303,7 @@ setStep(3); // Move to set new password step
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
       <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-md">
         <h2 className="text-2xl font-bold mb-6 text-center">
-          {step === 1 && 'Forgot Password for Customer'}
+          {step === 1 && 'Forgot Password for Seller'}
           {step === 2 && 'Verify OTP'}
           {step === 3 && 'Set New Password'}
         </h2>

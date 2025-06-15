@@ -318,7 +318,7 @@ export default function ProductCreate() {
 
       {/* Features */}
       <div>
-        <label className="block font-medium mb-2">Features</label>
+        <label className="block font-medium mb-2">Specifications</label>
         <div className="space-y-2 mb-4">
           {featuresList.map(({ key, value }) => (
             <div key={key} className="flex items-center gap-2">

@@ -345,11 +345,23 @@ const ProductPage = () => {
               </Button>
 
               <div className="flex flex-wrap gap-3 text-sm text-gray-500">
-                <button className="flex items-center hover:text-purple-600" onClick={async()=>{
-                    const productLink = window.location.href;
-                     await navigator.clipboard.writeText(productLink);
-                     alert('Product link copied to clipboard!');
-                }}>
+                <button className="flex items-center hover:text-purple-600" onClick={async () => {
+        try {
+          if (navigator.share) {
+            await navigator.share({
+              title: document.title,
+              text: 'Check out this page',
+              url: window.location.href
+            });
+          } else {
+            // Fallback for browsers that don't support the Share API
+            await navigator.clipboard.writeText(window.location.href);
+            alert('Link copied to clipboard!');
+          }
+        } catch (err) {
+          console.error('Error sharing:', err);
+        }
+      }}>
                   <Share2 className="h-4 w-4 mr-1" />
                   Share
                 </button>
@@ -417,7 +429,7 @@ const ProductPage = () => {
             </TabsContent>
 
             <TabsContent value="specifications" className="space-y-4">
-              <h3 className="text-lg font-medium mb-2">Technical Specifications</h3>
+              <h3 className="text-lg font-medium mb-2">Specifications</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {Object.entries(product?.[0]?.features || {}).map(([key, value]: [string, any]) => (
                   <div key={key} className="flex border-b pb-3">
