@@ -1,15 +1,22 @@
-// src/components/ScrollToTop.js
-import { useEffect } from 'react';
+import { useEffect, useLayoutEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
-function ScrollToTop() {
+const ScrollToTop = () => {
   const { pathname } = useLocation();
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]); // Re-run effect whenever the pathname changes
+  // Use useLayoutEffect for immediate effect before browser paints
+  // or useEffect if you don't mind a slight flicker on very fast navigations
+  useLayoutEffect(() => {
+    // window.scrollTo(0, 0); // Scrolls to the top-left corner of the page
+    // For smooth scrolling, use:
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'smooth'
+    });
+  }, [pathname]); // Re-run this effect whenever the pathname changes
 
-  return null; // This component doesn't render anything itself
-}
+  return null; // This component doesn't render anything visible
+};
 
 export default ScrollToTop;
