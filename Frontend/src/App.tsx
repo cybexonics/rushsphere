@@ -49,6 +49,9 @@ import VendorApprove from './pages/admin/VendorApprove'
 import AuthProvider from "./context/AuthProvider";
 import CartProvider from "./context/CartProvider";
 
+
+import ScrollToTop from "./lib/ScrollToTop"
+
 //VendorApprove
 
 const queryClient = new QueryClient();
@@ -62,6 +65,7 @@ const App = () => (
             <Toaster />
             <Sonner />
             <Routes>
+            <ScrollToTop/>
               <Route element={<Layout />}>
                 <Route path="/" element={<Index />} />
                 <Route path="/login" element={<CustomerLogin />} />
@@ -109,10 +113,10 @@ const App = () => (
                     element={<VendorOrderView />}
                   />
                 </Route>
+                <Route path="/admin/login" element={<AdminLogin/>}/>
                 <Route path="/admin" element={<AdminLayout/>}>
                   <Route path="/admin" element={<Admin/>}/>
                   <Route path="/admin/order/:orderId" element={<AdminOrderView/>}/>
-                  <Route path="/admin/login" element={<AdminLogin/>}/>
                   <Route path="/admin/products/pending" element={<AdminProductApproval />} />
                   <Route path="/admin/vendors/pending" element={<VendorApprove />} />
                   <Route path="/admin/products" element={<AdminProducts />} />
