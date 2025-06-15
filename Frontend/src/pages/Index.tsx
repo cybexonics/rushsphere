@@ -41,7 +41,7 @@ const Index = () => {
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {categories.map((category, index) => (
-              <div key={index} className="group cursor-pointer">
+              <Link to={`/category/${category.slug}`} key={index} className="group cursor-pointer">
                 <div className="relative overflow-hidden rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
                   <img 
                     src={category.image || "/placeholder.svg"}
@@ -55,7 +55,7 @@ const Index = () => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
