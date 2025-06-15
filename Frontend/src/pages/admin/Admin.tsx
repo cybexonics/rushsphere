@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link,useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import {
   Package,
@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 
 const AdminDashboard = () => {
+  const navigate = useNavigate()
   const stats = [
     { label: 'All Products', value: 0, icon: Package, color: 'blue' },
     { label: 'All Vendors', value: '120', icon: Users, color: 'green' },
