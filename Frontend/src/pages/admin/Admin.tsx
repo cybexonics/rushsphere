@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 
 const AdminDashboard = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate()  ;
   const stats = [
     { label: 'All Products', value: 0, icon: Package, color: 'blue' },
     { label: 'All Vendors', value: '120', icon: Users, color: 'green' },

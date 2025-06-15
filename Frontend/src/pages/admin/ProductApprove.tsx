@@ -11,7 +11,7 @@ const AdminProductApproval = () => {
   const fetchPendingProducts = async () => {
     try {
       setLoading(true);
-      const res = await fetch('https://rushsphere.onrender.com/api/products?filters[isApproved][$eq]=false,null&populate=*');
+      const res = await fetch('https://rushsphere.onrender.com/api/products?filters[$or][0][isApproved][$eq]=false&filters[$or][1][isApproved][$null]=true&populate=*');
       const data = await res.json();
       setPendingProducts(data.data); // Strapi v4 returns data inside `data`
       console.log(data.data[2])
