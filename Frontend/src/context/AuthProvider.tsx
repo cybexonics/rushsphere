@@ -49,6 +49,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [vendor, setVendor] = useState<VendorData | null>(null);
   const [isVendor, setIsVendor] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [error,setError] = useState('')
 
   useEffect(() => {
     restoreSession();
@@ -61,16 +62,16 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (storedUserId) {
         const userData = await getData(`customers/${storedUserId}?populate=*`);
-        if (userData?.data) setUser(userData.data.attributes ? { ...userData.data.attributes, documentId: userData.data.id } : userData.data);
+        if (userData?.data) setUser(userData.data ? { ...userData.data, documentId: userData.data.id } : userData.data);
       }
 
       if (storedVendorId) {
         const vendorData = await getData(`vendors/${storedVendorId}?populate=*`);
         if (vendorData?.data) {
-          if (!vendorData.data.attributes.isApproved) {
+          if (!vendorData.data.isApproved) {
             navigate(`/not-approved`);
           }
-          setVendor(vendorData.data.attributes ? { ...vendorData.data.attributes, documentId: vendorData.data.id } : vendorData.data);
+          setVendor(vendorData.data ? { ...vendorData.data, documentId: vendorData.data.id } : vendorData.data);
           setIsVendor(true);
         }
       }
@@ -110,7 +111,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (!data) throw new Error('Invalid credentials');
       if (!data.isApproved) navigate(`/not-approved`);
 
-      const vendorDataWithId = { ...data.attributes, documentId: data.documentId };
+      const vendorDataWithId = { ...data, documentId: data.documentId };
       setVendor(vendorDataWithId);
       setIsVendor(true);
       localStorage.setItem('vendor', data.documentId);
@@ -158,15 +159,34 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
         body: JSON.stringify({ data: payload }),
       });
 
-      const json = await res.json();
-      if (!res.ok) {
-        console.error(json?.error?.message || 'Signup failed');
-        navigate(`/failed`);
-      }
+     const json = await res.json()
+    if (!res.ok) {
+      let alertMessage = `Signup failed (Status: ${res.status})`;
 
-      const vendorId = json.data.id;
+      if (json.error) {
+        alertMessage = json.error.message || alertMessage; // Main error message from Strapi
+
+        // Check for the 'details.errors' array which holds field-specific validation errors
+        if (json.error.details && Array.isArray(json.error.details.errors)) {
+          const fieldErrors = json.error.details.errors.map(err => {
+            const field = err.path && err.path.length > 0 ? err.path.join('.') : 'unknown field';
+            return `- ${field}: ${err.message}`;
+          }).join('\n');
+          alertMessage += `\n\nDetails:\n${fieldErrors}`;
+        }
+      }
+      setError(alertMessage);
+      navigate('/failed');
+      return;
+    }
+
+    // If res.ok is true, it's a success
+    alert('Success', 'Signup successful!');
+    navigate('/success');
+
+      const vendorId = json.data.documentIds;
       const vendorData = await getData(`vendors/${vendorId}?populate=*`);
-      const vendorDataWithId = { ...vendorData.data.attributes, documentId: vendorData.data.id };
+      const vendorDataWithId = { ...vendorData.data, documentId: vendorData.data.documentId };
       
       setVendor(vendorDataWithId);
       setIsVendor(true);
@@ -213,7 +233,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
 
       const responseData = await response.json();
-      const updatedServerUserData = { ...responseData.data.attributes, documentId: responseData.data.id };
+      const updatedServerUserData = { ...responseData.data, documentId: responseData.data.id };
       
       setUser(updatedServerUserData);
       localStorage.setItem('user', JSON.stringify(updatedServerUserData));
@@ -246,7 +266,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
 
       const responseData = await response.json();
-      const updatedServerVendorData = { ...responseData.data.attributes, documentId: responseData.data.id };
+      const updatedServerVendorData = { ...responseData.data, documentId: responseData.data.id };
 
       setVendor(updatedServerVendorData);
       localStorage.setItem('vendor', JSON.stringify(updatedServerVendorData));
@@ -265,6 +285,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
         vendor,
         isVendor,
         loading,
+        error,
         login,
         logout,
         signup,

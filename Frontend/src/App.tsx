@@ -19,6 +19,7 @@ import OrderTracking from "./pages/OrderTracking";
 import About from "./pages/About"
 import Contact from "./pages/Contact"
 import NotApproved from "./pages/NotApproved"
+import Failed from "./pages/Failed"
 
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermPolicy from "./pages/TermPolicy";
@@ -84,6 +85,7 @@ const App = () => (
                 <Route path="/shipping-policy" element={<TermPolicy />} />
                 <Route path="/refund-policy" element={<TermPolicy />} />
                 <Route path="/not-approved" element={<NotApproved/> }/>
+                <Route path="/failed" element={<Failed/>}/>
                 <Route path="/orders/:orderId" element={<OrderTracking />} />
                 <Route
                   path="/category/:categoryName"
