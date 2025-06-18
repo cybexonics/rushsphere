@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Button } from '@/components/ui/button';
+import { Trash2 } from 'lucide-react';
 
 interface Order {
   id: number;
@@ -45,6 +47,12 @@ const AdminOrdersPage = () => {
     fetchOrders();
   }, []);
 
+
+  const handleDelete = async(id) => {
+    // TODO: Add API logic
+    await axios.delete(`https://rushsphere.onrender.com/api/orders/${id}`)
+  };
+
   return (
     <div className="p-8">
       <h2 className="text-2xl font-bold mb-6">All Orders</h2>
@@ -79,8 +87,13 @@ const AdminOrdersPage = () => {
                     </span>
                   </td>
                   <td className="px-6 py-4">{order.createdAt}</td>
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-4 text-center">
+                  <div className="flex justify-center space-x-2 items-center">
                     <a href={`/admin/order/${order.orderNo}`}>View</a>
+                     <Button variant="destructive" size="sm" onClick={() => handleDelete(order.documentId)}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                        </div>
                   </td>
                 </tr>
               ))}

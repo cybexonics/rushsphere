@@ -31,10 +31,11 @@ const AdminSingleOrderView = () => {
 
   // Group products by vendorId
   const groupProductsByVendor = () => {
+  console.log(order)
     if (!order?.products) return {};
     const map = {};
     order.products.forEach(product => {
-      const vendorId = product.product.vendor.vendor_id;
+      const vendorId = product?.product?.vendor?.vendor_id;
       if (!map[vendorId]) {
         map[vendorId] = [];
       }

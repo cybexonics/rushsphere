@@ -108,7 +108,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
       const data = res?.data?.[0];
 
       if (!data) throw new Error('Invalid credentials');
-      if (!data.attributes.isApproved) navigate(`/not-approved`);
+      if (!data.isApproved) navigate(`/not-approved`);
 
       const vendorDataWithId = { ...data.attributes, documentId: data.documentId };
       setVendor(vendorDataWithId);

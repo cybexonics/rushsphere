@@ -131,6 +131,8 @@ const Checkout = () => {
             variant: "destructive"
           });
         }
+      }else{
+        navigate('/login')
       }
     };
     getUserAndAddresses();
@@ -150,11 +152,7 @@ const Checkout = () => {
         state: shippingInfo.state,
         zip: shippingInfo.zip
       },
-      products: cart.map(item => ({
-        product: { id: item.product.id, documentId: item.product.documentId }, // Only send necessary product info
-        quantity: item.quantity,
-        other: item.other || null // Include other if it exists
-      })),
+      products: cart,
       payment: {
         method: paymentMethod,
         status: paymentMethod === 'cod' ? 'pending' : 'unpaid'
