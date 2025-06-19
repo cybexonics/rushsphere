@@ -58,7 +58,11 @@ import ScrollToTop from "./lib/ScrollToTop"
 
 const queryClient = new QueryClient();
 
-const App = () => (
+const App = () =>  {
+  // 👇 Simulated payment status (replace with real logic if needed)
+  const hasPaid = false; // change this to `true` to see the actual app
+
+  return(
   <QueryClientProvider client={queryClient}>
     <BrowserRouter>
       <AuthProvider>
@@ -67,6 +71,22 @@ const App = () => (
             <Toaster />
             <Sonner />
             <ScrollToTop/>
+            {!hasPaid ?  (
+                <div className="min-h-screen bg-yellow-50 flex flex-col items-center justify-center text-center px-4 py-10">
+  <div className="max-w-xl space-y-4">
+    <h1 className="text-xl font-semibold text-yellow-800">
+      ⚠️ Website activation is pending payment completion.
+    </h1>
+    <p className="text-yellow-700 font-medium">
+      🛡️ Please note: The website source code is secure and protected from deletion or unauthorized modifications.
+    </p>
+    <p className="text-sm text-yellow-600 mt-4">
+      To proceed with deployment, kindly complete the remaining payment.
+    </p>
+  </div>
+</div>
+
+              ) : (
             <Routes>
               <Route element={<Layout />}>
                 <Route path="/" element={<Index />} />
@@ -131,11 +151,12 @@ const App = () => (
                 </Route>
               </Route>
             </Routes>
+            )}
           </TooltipProvider>
         </CartProvider>
       </AuthProvider>
     </BrowserRouter>
   </QueryClientProvider>
-);
+)};
 
 export default App;
