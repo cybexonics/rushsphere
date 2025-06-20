@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Trash2 } from 'lucide-react';
 
 interface Order {
   id: number;
@@ -45,6 +48,10 @@ const AdminOrdersPage = () => {
     fetchOrders();
   }, []);
 
+const handleDelete = async(id) => {
+    // TODO: Add API logic
+    await axios.delete(`https://rushsphere.onrender.com/api/vendor-orders/${id}`)
+  };
   return (
     <div className="p-8">
       <h2 className="text-2xl font-bold mb-6">All Orders</h2>
@@ -70,17 +77,33 @@ const AdminOrdersPage = () => {
             <tbody>
               {orders.map(order => (
                 <tr key={order.id} className="border-t">
-                  <td className="px-6 py-4 font-medium">#{order.other.orderNo}</td>
-                  <td className="px-6 py-4">{order.products?.name}</td>
-                  <td className="px-6 py-4">{order.other?.total}</td>
+                  <td className="px-6 py-4 font-medium">#{order.order.orderNo}</td>
+                  <td className="px-6 py-4">{order?.products?.map(product => {return product?.product?.name})}</td>
+                  <td className="px-6 py-4">{order.products.map((p)=>{
+                    return p?.product?.price *( p?.quantity || 1)
+                  })}</td>
                   <td className="px-6 py-4">
                     <span className={`px-2 py-1 text-sm rounded-full font-medium ${getStatusColor(order.other.status)}`}>
-                      {order.other.status}
+                      {order.order.status}
                     </span>
                   </td>
                   <td className="px-6 py-4">{order.createdAt}</td>
                   <td className="px-6 py-4">
-                    <a href={`/vendor/orders/${order.documentId}`}>View</a>
+                   <div className="flex justify-center space-x-2">
+                        <Link to={`/vendor/orders/${order.documentId}`}>
+                          <Button variant="outline" size="sm">
+                            View
+                          </Button>
+                        </Link>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => handleDelete(order.documentId)}
+                          
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                        </div>
                   </td>
                 </tr>
               ))}

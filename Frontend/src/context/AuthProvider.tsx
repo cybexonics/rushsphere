@@ -62,7 +62,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (storedUserId) {
         const userData = await getData(`customers/${storedUserId}?populate=*`);
-        if (userData?.data) setUser(userData.data ? { ...userData.data, documentId: userData.data.id } : userData.data);
+        if (userData?.data) setUser(userData.data ? { ...userData.data, documentId: userData.data.documentId } : userData.data);
       }
 
       if (storedVendorId) {
@@ -71,7 +71,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
           if (!vendorData.data.isApproved) {
             navigate(`/not-approved`);
           }
-          setVendor(vendorData.data ? { ...vendorData.data, documentId: vendorData.data.id } : vendorData.data);
+          setVendor(vendorData.data ? { ...vendorData.data, documentId: vendorData.data.documentId } : vendorData.data);
           setIsVendor(true);
         }
       }
@@ -111,7 +111,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (!data) throw new Error('Invalid credentials');
       if (!data.isApproved) navigate(`/not-approved`);
 
-      const vendorDataWithId = { ...data, documentId: data.documentId };
+      const vendorDataWithId = { ...data};
       setVendor(vendorDataWithId);
       setIsVendor(true);
       localStorage.setItem('vendor', data.documentId);

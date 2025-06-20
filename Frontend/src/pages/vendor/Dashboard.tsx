@@ -35,21 +35,15 @@ const VendorDashboard = () => {
         // Fetch all products, then filter by vendor on the client-side
         // Or, ideally, your API supports filtering products by vendor directly
         // Example if API supports vendor ID filter: `products?filters[vendor][documentId][$eq]=${vendor.documentId}`
-        const [productRes, vendorOrdersRes] = await Promise.all([
-          getData(`products?populate=vendor`), // Populate vendor to filter
-          getData(`orders?populate=*&filters[products][vendor][documentId][$eq]=${vendor.documentId}`), // Filter orders by vendor's products
-          // Fetch orders and populate products and their vendor details to ensure correct filtering
-        ]);
+    
 
-        const fetchedProducts = productRes?.data || [];
-        const fetchedOrders = vendorOrdersRes?.data || [];
-
-        // Transform products and filter for the current vendor
-        const transformedProducts = transformProductData(fetchedProducts);
-        const vendorProducts = transformedProducts.filter(p => p.vendor?.documentId === vendor.documentId);
-
+        const resPro = await getData('products?populate=*');
+        const resOrd = await getData('vendor-orders?populate=*');
+      const vendorProducts = resPro?.data.filter(p=>p.vendor?.documentId === vendor.documentId)
         
-        const currentVendorOrders = fetchedOrders.filter(order => {
+        console.log("venor pro:",resOrd.data)
+        
+        const currentVendorOrders = resOrd.data.filter(order => {
           const orderProducts = order.products?.data || [];
           return orderProducts.some(product => {
             return product.attributes.vendor?.data?.documentId === vendor.documentId;
@@ -99,7 +93,6 @@ const VendorDashboard = () => {
       { label: 'Total Products', value: information.products, icon: Package, color: 'blue' },
       { label: 'Total Sales', value: information.sales.toFixed(2), icon: DollarSign, color: 'green' }, // Format sales
       { label: 'Orders This Month', value: information.orders, icon: TrendingUp, color: 'purple' }, // Assuming this is total orders
-      { label: 'Store Views', value: information.views, icon: Eye, color: 'orange' } // Assuming 'information.views' will eventually be populated
     ]);
   }, [information]); // Depend on 'information' state
 

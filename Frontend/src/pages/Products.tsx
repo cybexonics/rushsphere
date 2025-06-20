@@ -18,9 +18,9 @@ const AllProducts = () => {
     }
     return '';
   };
+  const currentSearch = getSearchQueryFromUrl();
 
   useEffect(() => {
-    const currentSearch = getSearchQueryFromUrl();
     setSearchQuery(currentSearch); // Initialize search input with URL query
 
     const fetchData = async (query) => {
@@ -53,7 +53,7 @@ const AllProducts = () => {
     // A simpler way to trigger re-fetch is to rely on the search bar's internal state
     // changing the URL, which will cause a re-render and re-evaluation of getSearchQueryFromUrl().
     fetchData(currentSearch);
-  }, [window.location]); // Depend on window.location.search for re-fetching
+  }, [currentSearch]); // Depend on window.location.search for re-fetching
 
   // Function to handle changes in the search input
   // If you also want to trigger search on 'Enter' key press

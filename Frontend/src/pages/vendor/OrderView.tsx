@@ -60,9 +60,9 @@ const AdminSingleOrderView = () => {
       {/* Shipping Address */}
       <div className="mb-6">
         <h2 className="text-lg font-semibold text-gray-800 mb-2">Shipping Address</h2>
-        <p>{order?.[0]?.address?.street}</p>
-        <p>{order?.[0]?.address?.city}, {order?.[0]?.address?.state} {order?.[0]?.address?.zip}</p>
-        <p>{order?.[0]?.address?.country}</p>
+        <p>RushSphere Head Office,</p>
+        <p>Gadag,Karnatak,582101</p>
+        <p>India</p>
       </div>
 
       {/* Products */}
@@ -76,10 +76,10 @@ const AdminSingleOrderView = () => {
       >
         <div>
           <div className="font-medium text-gray-900">
-            {product?.name || 'Unnamed Product'}
+            {product?.product?.name || 'Unnamed Product'}
           </div>
           <div className="text-sm text-gray-600">
-            ${product?.price || '0.00'}
+            ₹{product?.product?.price || '0.00'} * {product?.quantity || '0.00'} 
           </div>
           <div className="text-sm text-gray-600">
             {order?.other?.details?.map((i,index)=>{
@@ -98,8 +98,8 @@ const AdminSingleOrderView = () => {
       {/* Summary */}
       <div className="mb-6">
         <h2 className="text-lg font-semibold text-gray-800 mb-2">Order Summary</h2>
-        <p><strong>Status:</strong> {order?.other?.status}</p>
-        <p><strong>Total:</strong> ${order?.other?.total}</p>
+        <p><strong>Status:</strong> {order?.order?.status}</p>
+        <p><strong>Total:</strong> ₹{order?.products.map((p)=>{return p?.product?.price * p?.quantity})}</p>
         <p><strong>Shipping Provider:</strong> {order.shipping_provider || 'Not assigned yet'}</p>
       </div>
 

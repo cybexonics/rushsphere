@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Eye, Loader2 } from 'lucide-react';
+import { Eye, Loader2, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const CustomerList = () => {
@@ -23,6 +23,11 @@ const CustomerList = () => {
   useEffect(() => {
     fetchCustomers();
   }, []);
+
+  const handleDelete = async(id) => {
+    // TODO: Add API logic
+    await axios.delete(`https://rushsphere.onrender.com/api/customers/${id}`)
+  };
 
   return (
     <div className="p-6">
@@ -67,12 +72,12 @@ const CustomerList = () => {
                     <td className="px-6 py-4 text-gray-700">{customer.email}</td>
                     <td className="px-6 py-4 text-gray-700">{customer.phone || '—'}</td>
                     <td className="px-6 py-4 text-gray-700">
-                      {address.city || '—'}, {address.state || ''} {address.country || ''}
+                      {customer?.address[0]?.city || "No Saved Location"}
                     </td>
                     <td className="px-6 py-4 text-center">
-                      <Button variant="outline" size="sm">
-                        <Eye className="w-4 h-4" />
-                      </Button>
+                      <Button variant="destructive" size="sm" onClick={() => handleDelete(customer.documentId)}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                     </td>
                   </tr>
                 );

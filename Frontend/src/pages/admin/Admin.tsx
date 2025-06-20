@@ -11,20 +11,13 @@ import {
   Clock,
   Plus
 } from 'lucide-react';
+import { getData } from "@/lib/getData";
 
 const AdminDashboard = () => {
   const navigate = useNavigate()  ;
-  const stats = [
-    { label: 'All Products', value: 0, icon: Package, color: 'blue' },
-    { label: 'All Vendors', value: '120', icon: Users, color: 'green' },
-    { label: 'Categories', value: '15', icon: Layers, color: 'purple' },
-    { label: 'Subcategories', value: '45', icon: List, color: 'orange' }
-  ];
 
-  const pendingApprovals = [
-    { label: 'Pending Products', link: '/admin/products/pending', icon: Clock },
-    { label: 'Pending Vendors', link: '/admin/vendors/pending', icon: Clock }
-  ];
+  const [info,setInfo] = useState({})
+
 
   
   useEffect(()=>{
@@ -35,6 +28,41 @@ const AdminDashboard = () => {
       navigate('/admin/login')
     }
   },[])
+
+  useEffect(()=>{
+    const setData = async() =>{
+      console.log("ok")
+      const resPro = await getData("products");
+      const resVen = await getData("vendors");
+      const resCus = await getData("customers");
+      const resCat = await getData("categories");
+      const resOrd = await getData("orders");
+
+      setInfo({
+        products:resPro.data.length,
+    vendors:resVen.data.length,
+    customers:resCus.data.length,
+    categories:resCat.data.length,
+    orders:resOrd.data.length,
+    paddingPro:resPro.data.filter(p=>p.isApproved === false).length,
+    paddingVen:resVen.data.filter(p=>p.isApproved === false).length
+      })
+    }
+    setData();
+  },[])
+
+  const stats = [
+    { label: 'All Products', value: info.products, icon: Package, color: 'blue' },
+    { label: 'All Vendors', value: info.vendors, icon: Users, color: 'green' },
+    { label: 'Customers', value: info.customers, icon: Layers, color: 'purple' },
+    { label: 'Orders', value: info.orders, icon: List, color: 'orange' }
+  ];
+
+  
+  const pendingApprovals = [
+    { label: 'Pending Products', link: '/admin/products/pending', icon: Clock , value: info?.paddingPro },
+    { label: 'Pending Vendors', link: '/admin/vendors/pending', icon: Clock, value: info?.paddingVen }
+  ];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -81,7 +109,7 @@ const AdminDashboard = () => {
                     </div>
                     <Link to={item.link}>
                       <span className="px-3 py-1 bg-yellow-100 text-yellow-800 text-sm rounded-full font-medium">
-                        View
+                         {item.value} Approvel Padding
                       </span>
                     </Link>
                   </div>

@@ -27,11 +27,12 @@ const AdminSingleOrderView = () => {
 
   useEffect(() => {
     fetchOrder();
+    
   }, [orderId]);
 
   // Group products by vendorId
   const groupProductsByVendor = () => {
-  console.log(order)
+  
     if (!order?.products) return {};
     const map = {};
     order.products.forEach(product => {
@@ -50,17 +51,20 @@ const checkVendorOrderExists = async (orderNo, vendorId) => {
     const res = await axios.get('https://rushsphere.onrender.com/api/vendor-orders', {
       params: {
         'filters[order][orderNo][$eq]': orderNo,
-        'filters[vendor][vendor_id][$eq]': vendorId, // note this depends on your vendor relation field
+        'filters[order][vendorId][$eq]': vendorId, // note this depends on your vendor relation field
       },
     });
 
     const orders = res.data?.data || [];
 
-    // Optional sanity check
     const matching = orders.filter(o => 
-      o.order?.orderNo === orderNo &&
-      o.vendor?.vendor_id === vendorId
+      o.order?.orderNo === orderNo ||
+      o.order?.vendorId === vendorId
     );
+    
+    if(matching.length > 0){
+      setSendingStatus(prev => ({ ...prev, [vendorId]: 'already_sent' }));
+    }
 
     return matching.length > 0;
   } catch (err) {
@@ -72,7 +76,7 @@ const checkVendorOrderExists = async (orderNo, vendorId) => {
   const handleSendToVendor = async (order, vendorId, products) => {
   setSendingStatus(prev => ({ ...prev, [vendorId]: 'sending' }));
 
-  const alreadySent = await checkVendorOrderExists(vendorId);
+  const alreadySent = await checkVendorOrderExists(order,vendorId);
   if (alreadySent) {
     setSendingStatus(prev => ({ ...prev, [vendorId]: 'already_sent' }));
     return;
@@ -81,7 +85,7 @@ const checkVendorOrderExists = async (orderNo, vendorId) => {
   try {
     const res = await axios.post('https://rushsphere.onrender.com/api/vendor-orders', {
       data: {
-        products: products.map(p => p.product),
+        products: products,
         other: {
           details: products.map(p => ({
             name: p?.name,
@@ -93,7 +97,6 @@ const checkVendorOrderExists = async (orderNo, vendorId) => {
           vendorId,
           status: "Pending",
         },
-        vendor: vendorId,
       },
     });
 
@@ -151,7 +154,7 @@ const checkVendorOrderExists = async (orderNo, vendorId) => {
   const vendor = products[0]?.product?.vendor;
   const vendorName = vendor?.name || vendor_id;
   const status = sendingStatus[vendor_id];
-
+  checkVendorOrderExists(orderId,vendor_id)
   return (
     <div key={vendor_id} className="mb-4 border rounded p-4 bg-gray-50">
       <div className="flex justify-between items-center mb-2">
@@ -159,7 +162,7 @@ const checkVendorOrderExists = async (orderNo, vendorId) => {
         <Button
           variant="outline"
           size="sm"
-          onClick={() => handleSendToVendor(order, vendor_id, products)}
+          onClick={() => handleSendToVendor(order, vendor_id,products)}
           disabled={status === 'sending' || status === 'sent' || status === 'already_sent'}
         >
           {status === 'sending' && <Loader2 className="animate-spin h-4 w-4 mr-1" />}

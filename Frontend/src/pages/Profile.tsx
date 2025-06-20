@@ -37,8 +37,6 @@ const Profile = () => {
     const storedUserId = localStorage.getItem('user');
     if (!storedUserId) {
       navigate('/login');
-    }else{
-      restoreSession()
     }
     if (user) {
       setUserName(user.name || '');
@@ -47,6 +45,10 @@ const Profile = () => {
       setAddresses(user.address || []);
     }
   }, [user, navigate]);
+
+  useEffect(()=>{
+    restoreSession()
+  },[])
 
   if (!user) return null; // Render nothing if user is not loaded yet
 

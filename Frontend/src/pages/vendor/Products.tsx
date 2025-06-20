@@ -15,7 +15,9 @@ const VendorProductList = () => {
   const fetchProducts = async () => {
     try {
       const res = await getData('products?populate=*');
-      setProducts(res?.data.filter(p=>p.vendor?.documentId === vendor.documentId));
+      console.log(res?.data.filter(p=>p?.vendor?.documentId === vendor.documentId))
+      console.log(vendor)
+      setProducts(res?.data.filter(p=>p?.vendor?.documentId === vendor.documentId));
     } catch (err) {
       console.error('Failed to load products:', err);
     } finally {
