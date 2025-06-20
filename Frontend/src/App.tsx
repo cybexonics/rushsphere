@@ -60,7 +60,7 @@ const queryClient = new QueryClient();
 
 const App = () =>  {
   // 👇 Simulated payment status (replace with real logic if needed)
-  const hasPaid = false; // change this to `true` to see the actual app
+  const hasPaid = true; // change this to `true` to see the actual app
 
   return(
   <QueryClientProvider client={queryClient}>

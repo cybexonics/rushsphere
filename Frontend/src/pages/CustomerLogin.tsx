@@ -40,7 +40,6 @@ const CustomerLogin: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
 
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-8">

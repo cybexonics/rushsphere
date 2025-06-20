@@ -37,8 +37,9 @@ const Profile = () => {
     const storedUserId = localStorage.getItem('user');
     if (!storedUserId) {
       navigate('/login');
+    }else{
+      restoreSession()
     }
-    restoreSession()
     if (user) {
       setUserName(user.name || '');
       setUserEmail(user.email || '');
