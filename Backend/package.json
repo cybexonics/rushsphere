@@ -39,5 +39,10 @@
   "strapi": {
     "uuid": "88085dc0-62d3-4009-85f4-adc0eed50d17",
     "installId": "6972b25da983699e8960b8f54fc261fe594946cdf4c4a0193993928dd31b2a0f"
-  }
+  },
+  "authors": {
+  "name": "Sanskar Bandgar",
+  "role": "Fullstack Developer | Freelancer",
+  "email": "mr.sanskar19@gmail.com"
+}
 }
